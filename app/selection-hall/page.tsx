@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/app/contexts/AuthContext';
@@ -9,7 +9,7 @@ import Card from '@/components/common/Card';
 import { MENTORS } from '@/utils/constants';
 import toast from 'react-hot-toast';
 
-export default function SelectionHallPage() {
+function SelectionHallContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, register, updateUser, loading: authLoading } = useAuth();
@@ -45,7 +45,7 @@ export default function SelectionHallPage() {
       }
     } else if (user) {
       // Update existing user
-      updateUser({ primary_mentor: selectedMentor as any });
+      updateUser({ primary_mentor: selectedMentor as 'machiavelli' | 'napoleon' | 'aurelius' });
       toast.success('Mentor selected!');
       router.push('/hall');
     } else {
@@ -58,16 +58,19 @@ export default function SelectionHallPage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="spinner"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-imperial-black to-imperial-darkGray">
+        <div className="w-12 h-12 border-4 border-imperial-gold border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen px-4 py-8 bg-gradient-dark">
+    <div className="min-h-screen px-4 py-8 bg-gradient-to-b from-imperial-black to-imperial-darkGray">
       {/* Background Effects */}
-      <div className="absolute inset-0 bg-gradient-radial from-imperial-darkGray to-imperial-black opacity-50"></div>
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-imperial-gold opacity-10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-imperial-gold opacity-10 rounded-full blur-3xl"></div>
+      </div>
 
       <div className="relative z-10 max-w-6xl mx-auto">
         {/* Header */}
@@ -76,7 +79,7 @@ export default function SelectionHallPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <h1 className="text-5xl font-serif text-gradient-gold mb-4">
+          <h1 className="text-5xl font-serif bg-gradient-to-r from-imperial-gold to-imperial-lightGold bg-clip-text text-transparent mb-4">
             The Selection Hall
           </h1>
           <p className="text-xl text-imperial-cream opacity-80 max-w-2xl mx-auto">
@@ -136,7 +139,7 @@ export default function SelectionHallPage() {
                     {/* Quote */}
                     <div className="pt-4 border-t border-imperial-gray">
                       <p className="text-xs italic text-imperial-gold">
-                        "{mentor.quote}"
+                        &quot;{mentor.quote}&quot;
                       </p>
                     </div>
                   </div>
@@ -144,7 +147,7 @@ export default function SelectionHallPage() {
                   {/* Selection Indicator */}
                   {selectedMentor === mentor.id && (
                     <div className="mt-4 text-center">
-                      <span className="inline-flex items-center gap-2 bg-gradient-gold text-imperial-black px-4 py-2 rounded-lg font-semibold">
+                      <span className="inline-flex items-center gap-2 bg-gradient-to-r from-imperial-gold to-imperial-lightGold text-imperial-black px-4 py-2 rounded-lg font-semibold">
                         <span>✓</span>
                         Selected
                       </span>
@@ -178,5 +181,17 @@ export default function SelectionHallPage() {
         </motion.div>
       </div>
     </div>
+  );
+}
+
+export default function SelectionHallPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-imperial-black to-imperial-darkGray">
+        <div className="w-12 h-12 border-4 border-imperial-gold border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    }>
+      <SelectionHallContent />
+    </Suspense>
   );
 }
