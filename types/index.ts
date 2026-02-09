@@ -44,6 +44,7 @@ export interface Unit {
 export interface Trial {
   id: number;
   title: string;
+  description?: string;
   unit_id?: number;            // optional to allow partial trial objects
   order_index?: number;        // optional
   lesson_content?: string;     // optional
