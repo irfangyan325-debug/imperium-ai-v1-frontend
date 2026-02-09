@@ -1,6 +1,6 @@
-import { TASKS_DATA, JOURNAL_DATA, COUNCIL_CASES, CURRICULUM_DATA, generateMockToken } from './staticData';
+import { TASKS_DATA, JOURNAL_DATA, COUNCIL_CASES } from './staticData';
 import { STORAGE_KEYS } from '../utils/constants';
-import type { User, Task, JournalEntry, CouncilCase, Trial } from '../types';
+import type { User, Task, JournalEntry, CouncilCase } from '../types';
 
 // User Management
 export const getStoredUser = (): User | null => {

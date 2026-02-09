@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/app/contexts/AuthContext';
@@ -8,9 +8,8 @@ import Button from '@/components/common/Button';
 import Card from '@/components/common/Card';
 import { CURRICULUM_DATA } from '@/lib/staticData';
 import { setTrialProgress, updateUserXP, updateUserStreak, addJournalEntry } from '@/lib/storage';
-import { MENTORS } from '@/utils/constants';
 import toast from 'react-hot-toast';
-import type { Trial } from '@/types';
+import type { Trial, Question } from '@/types';
 
 export default function TrialPage() {
   const router = useRouter();
@@ -18,28 +17,19 @@ export default function TrialPage() {
   const { user, loading: authLoading, refreshUser } = useAuth();
   
   const [trial, setTrial] = useState<Trial | null>(null);
+  const [loading, setLoading] = useState(true);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [showLesson, setShowLesson] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/auth/login');
-      return;
-    }
-
-    loadTrial();
-  }, [user, authLoading, params.id]);
-
-  const loadTrial = () => {
+  const loadTrial = useCallback(() => {
     const trialId = parseInt(params.id as string);
     
     // Find trial in curriculum
     let foundTrial: Trial | null = null;
-    for (const module of CURRICULUM_DATA) {
-      for (const unit of module.units || []) {
-        const t = unit.trials?.find(t => t.id === trialId);
+    for (const curriculumModule of CURRICULUM_DATA) {
+      for (const unit of curriculumModule.units || []) {
+        const t = unit.trials?.find(trial => trial.id === trialId);
         if (t) {
           foundTrial = t;
           break;
@@ -55,117 +45,142 @@ export default function TrialPage() {
     }
     
     setTrial(foundTrial);
+    setLoading(false);
+  }, [params.id, router]);
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push('/auth/login');
+      return;
+    }
+
+    if (user) {
+      loadTrial();
+    }
+  }, [user, authLoading, loadTrial, router]);
+
+  const generateMentorFeedback = (mentorName: string, trialTitle: string, score: number, correct: number, total: number): string => {
+    const mentorStyles: Record<string, { strengths: string; growth: string; nextSteps: string }> = {
+      machiavelli: {
+        strengths: `You demonstrated strategic thinking in ${correct} of ${total} scenarios. Your grasp of pragmatic power dynamics shows promise.`,
+        growth: `However, ${total - correct} areas require sharper analysis. Power rewards those who see all angles, not just the obvious ones.`,
+        nextSteps: `Study the nuances of manipulation and influence. Remember: appearances often matter more than reality.`
+      },
+      napoleon: {
+        strengths: `Your decisive answers on ${correct} questions show a commander's instinct. Speed and confidence are essential.`,
+        growth: `Yet ${total - correct} questions revealed hesitation. In battle and in power, indecision is defeat.`,
+        nextSteps: `Train your mind to assess and act with lightning speed. Fortune favors the bold who are also prepared.`
+      },
+      aurelius: {
+        strengths: `You answered ${correct} of ${total} questions correctly, showing wisdom and reflection.`,
+        growth: `The ${total - correct} errors are opportunities for growth. True strength comes from acknowledging what we don't yet understand.`,
+        nextSteps: `Reflect on these lessons daily. Virtue is built through consistent practice, not sudden insight.`
+      }
+    };
+
+    const style = mentorStyles[mentorName.toLowerCase()] || mentorStyles.aurelius;
+    
+    return `**Trial Complete: ${trialTitle}**
+
+**Your Score: ${score}%**
+
+${style.strengths}
+
+${score < 70 ? style.growth : 'Your understanding is solid, but never stop refining your knowledge.'}
+
+**Next Steps:**
+${style.nextSteps}
+
+Continue your journey with discipline and focus. Each trial brings you closer to mastery.
+
+— ${mentorName}`;
   };
 
-  const handleStartQuiz = () => {
-    setShowLesson(false);
-  };
-
-  const handleAnswerChange = (questionId: number, answer: string) => {
-    setAnswers({ ...answers, [questionId]: answer });
+  const handleAnswerSelect = (questionId: number, answer: string) => {
+    setAnswers(prev => ({ ...prev, [questionId]: answer }));
   };
 
   const handleSubmit = async () => {
     if (!trial || !user) return;
+
+    const questions = trial.questions || [];
     
-    const unansweredQuestions = trial.questions?.filter(q => !answers[q.id]);
-    if (unansweredQuestions && unansweredQuestions.length > 0) {
+    // Check all questions answered
+    if (Object.keys(answers).length < questions.length) {
       toast.error('Please answer all questions');
       return;
     }
 
-    setSubmitting(true);
-    
     // Calculate score
-    const questions = trial.questions || [];
-    const correctCount = questions.filter(q => answers[q.id] === q.correct_answer).length;
+    let correctCount = 0;
+    questions.forEach(q => {
+      if (answers[q.id] === q.correct_answer) {
+        correctCount++;
+      }
+    });
+
     const score = Math.round((correctCount / questions.length) * 100);
     const passed = score >= (trial.passing_score || 70);
-    
-    // Update trial progress
-    setTrialProgress(trial.id, 'completed', score);
-    
+
     if (passed) {
-      // Award XP
-      updateUserXP(trial.xp_reward);
+      // Update progress
+      setTrialProgress(trial.id, 'completed', score);
+      updateUserXP(trial.xp_reward || 100);
       updateUserStreak();
       
-      // Generate mentor feedback
-      const mentor = user.primary_mentor ? MENTORS[user.primary_mentor] : MENTORS.machiavelli;
-      const feedback = generateMentorFeedback(mentor.name, trial.title, score, correctCount, questions.length);
-      
+      // Generate and save feedback
+      const mentorName = user.primary_mentor || 'aurelius';
+      const mentorDisplayName = mentorName.charAt(0).toUpperCase() + mentorName.slice(1);
+      const feedback = generateMentorFeedback(
+        mentorDisplayName,
+        trial.title,
+        score,
+        correctCount,
+        questions.length
+      );
+
       addJournalEntry({
         entry_type: 'mentor_feedback',
-        title: `Feedback on ${trial.title}`,
+        title: `Trial Feedback: ${trial.title}`,
         content: feedback,
       });
-      
-      toast.success(`Trial completed! +${trial.xp_reward} XP`);
-      
-      // Redirect to feedback page
-      setTimeout(() => {
-        router.push(`/feedback/${trial.id}`);
-      }, 1500);
+
+      refreshUser();
+      toast.success(`Trial passed! +${trial.xp_reward || 100} XP`);
+      router.push(`/feedback/${trial.id}`);
     } else {
-      toast.error(`Score: ${score}%. You need ${trial.passing_score}% to pass. Try again!`);
+      toast.error(`Score: ${score}%. You need ${trial.passing_score || 70}% to pass.`);
       setAnswers({});
+      setCurrentQuestionIndex(0);
       setShowLesson(true);
     }
-    
-    refreshUser();
-    setSubmitting(false);
   };
 
-  const generateMentorFeedback = (mentorName: string, trialTitle: string, score: number, correct: number, total: number): string => {
-    const performance = score >= 90 ? 'excellent' : score >= 80 ? 'strong' : score >= 70 ? 'solid' : 'acceptable';
-    
-    return `**${mentorName}'s Assessment:**
-
-Your performance on "${trialTitle}" was ${performance}. You scored ${score}%, answering ${correct} out of ${total} questions correctly.
-
-**Strengths:**
-- Demonstrated understanding of core concepts
-- Successfully completed the trial
-
-**Areas for Growth:**
-- Continue practicing these principles in real situations
-- Review the lesson content for deeper insights
-- Apply what you've learned in your daily interactions
-
-**Next Steps:**
-Move forward to the next trial when ready. Each lesson builds upon the previous, strengthening your mastery of power dynamics.
-
-Remember: Knowledge without application is merely philosophy. True power comes from practiced wisdom.`;
-  };
-
-  if (authLoading || !user || !trial) {
+  if (authLoading || loading || !trial || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="spinner"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-imperial-black to-imperial-darkGray">
+        <div className="w-12 h-12 border-4 border-imperial-gold border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
-  const currentQuestion = trial.questions?.[currentQuestionIndex];
-  const totalQuestions = trial.questions?.length || 0;
-  const progress = totalQuestions > 0 ? ((currentQuestionIndex + 1) / totalQuestions) * 100 : 0;
+  const questions = trial.questions || [];
+  const currentQuestion = questions[currentQuestionIndex];
 
   return (
-    <div className="min-h-screen pb-20 bg-gradient-dark">
+    <div className="min-h-screen pb-20 bg-gradient-to-b from-imperial-black to-imperial-darkGray">
       {/* Header */}
-      <header className="bg-imperial-darkGray border-b border-imperial-gray sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-serif text-gradient-gold">{trial.title}</h1>
-              <p className="text-imperial-cream opacity-70 text-sm">
-                {showLesson ? 'Study the lesson' : `Question ${currentQuestionIndex + 1} of ${totalQuestions}`}
-              </p>
-            </div>
-            <Button variant="ghost" onClick={() => router.push('/path')}>
-              ← Back to Path
-            </Button>
-          </div>
+      <header className="bg-imperial-darkGray border-b border-imperial-gray">
+        <div className="max-w-4xl mx-auto px-4 py-4">
+          <button
+            onClick={() => router.push('/path')}
+            className="text-imperial-gold hover:text-imperial-lightGold mb-2 flex items-center gap-2"
+          >
+            ← Back to Path
+          </button>
+          <h1 className="text-3xl font-serif bg-gradient-to-r from-imperial-gold to-imperial-lightGold bg-clip-text text-transparent">
+            {trial.title}
+          </h1>
         </div>
       </header>
 
@@ -175,55 +190,55 @@ Remember: Knowledge without application is merely philosophy. True power comes f
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="space-y-6"
           >
-            <Card>
+            <Card variant="gold">
               <div 
                 className="prose prose-invert max-w-none"
-                dangerouslySetInnerHTML={{ 
-                  __html: trial.lesson_content
-                    .replace(/^# (.*$)/gim, '<h1 class="text-3xl font-serif text-imperial-gold mb-4">$1</h1>')
-                    .replace(/^## (.*$)/gim, '<h2 class="text-2xl font-serif text-imperial-gold mb-3 mt-6">$1</h2>')
-                    .replace(/^### (.*$)/gim, '<h3 class="text-xl font-serif text-imperial-gold mb-2 mt-4">$1</h3>')
-                    .replace(/\*\*(.*?)\*\*/g, '<strong class="text-imperial-gold">$1</strong>')
-                    .replace(/\n/g, '<br/>')
-                }}
+                dangerouslySetInnerHTML={{ __html: trial.lesson_content || '' }}
               />
+              <div className="mt-6 flex justify-end">
+                <Button onClick={() => setShowLesson(false)}>
+                  Begin Assessment →
+                </Button>
+              </div>
             </Card>
-
-            <div className="flex justify-center">
-              <Button onClick={handleStartQuiz} size="lg">
-                Begin Quiz →
-              </Button>
-            </div>
           </motion.div>
         ) : (
-          /* Quiz */
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="space-y-6"
-          >
-            {/* Progress Bar */}
-            <div className="progress-bar">
-              <div className="progress-bar-fill" style={{ width: `${progress}%` }} />
-            </div>
+          /* Quiz Mode */
+          <div className="space-y-6">
+            {/* Progress */}
+            <Card>
+              <div className="flex justify-between text-sm mb-2">
+                <span className="text-imperial-cream">Question {currentQuestionIndex + 1} of {questions.length}</span>
+                <span className="text-imperial-gold">{Object.keys(answers).length} answered</span>
+              </div>
+              <div className="w-full h-2 bg-imperial-gray rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-imperial-gold to-imperial-lightGold transition-all duration-300"
+                  style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
+                />
+              </div>
+            </Card>
 
             {/* Question */}
-            {currentQuestion && (
-              <Card>
+            <motion.div
+              key={currentQuestionIndex}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+            >
+              <Card variant="gold">
                 <h2 className="text-xl font-serif text-imperial-gold mb-6">
-                  {currentQuestion.question_text}
+                  {currentQuestion?.question_text}
                 </h2>
 
                 <div className="space-y-3">
-                  {currentQuestion.options?.map((option, index) => (
+                  {currentQuestion?.options?.map((option, index) => (
                     <button
                       key={index}
-                      onClick={() => handleAnswerChange(currentQuestion.id, option)}
-                      className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
+                      onClick={() => handleAnswerSelect(currentQuestion.id, option)}
+                      className={`w-full p-4 rounded-lg border-2 text-left transition-all ${
                         answers[currentQuestion.id] === option
-                          ? 'border-imperial-gold bg-imperial-gold bg-opacity-10'
+                          ? 'border-imperial-gold bg-imperial-gold bg-opacity-20'
                           : 'border-imperial-gray hover:border-imperial-gold'
                       }`}
                     >
@@ -232,36 +247,45 @@ Remember: Knowledge without application is merely philosophy. True power comes f
                   ))}
                 </div>
               </Card>
-            )}
+            </motion.div>
 
             {/* Navigation */}
-            <div className="flex justify-between">
+            <div className="flex gap-4">
               <Button
-                variant="ghost"
-                onClick={() => setCurrentQuestionIndex(Math.max(0, currentQuestionIndex - 1))}
+                variant="outline"
+                onClick={() => setCurrentQuestionIndex(prev => Math.max(0, prev - 1))}
                 disabled={currentQuestionIndex === 0}
+                className="flex-1"
               >
                 ← Previous
               </Button>
 
-              {currentQuestionIndex < totalQuestions - 1 ? (
+              {currentQuestionIndex < questions.length - 1 ? (
                 <Button
-                  onClick={() => setCurrentQuestionIndex(currentQuestionIndex + 1)}
-                  disabled={!answers[currentQuestion?.id || 0]}
+                  onClick={() => setCurrentQuestionIndex(prev => prev + 1)}
+                  className="flex-1"
                 >
                   Next →
                 </Button>
               ) : (
                 <Button
                   onClick={handleSubmit}
-                  loading={submitting}
-                  disabled={submitting || Object.keys(answers).length < totalQuestions}
+                  disabled={Object.keys(answers).length < questions.length}
+                  className="flex-1"
                 >
                   Submit Trial
                 </Button>
               )}
             </div>
-          </motion.div>
+
+            {/* Review Link */}
+            <button
+              onClick={() => setShowLesson(true)}
+              className="text-imperial-gold hover:text-imperial-lightGold text-sm"
+            >
+              ← Review Lesson
+            </button>
+          </div>
         )}
       </main>
     </div>

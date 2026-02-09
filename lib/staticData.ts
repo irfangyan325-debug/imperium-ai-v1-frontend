@@ -1,4 +1,4 @@
-import type { User, Module, Trial, Task, CouncilCase, JournalEntry } from '../types';
+import type { User, Task, JournalEntry, CouncilCase, Module } from '../types';
 
 // Mock Users Database
 export const USERS_DB: Record<string, User & { password: string }> = {
@@ -8,15 +8,118 @@ export const USERS_DB: Record<string, User & { password: string }> = {
     password: 'password123',
     primary_mentor: 'machiavelli',
     current_rank: 'Strategist',
-    influence_xp: 1250,
-    streak_days: 7,
+    influence_xp: 750,
+    streak_days: 5,
     subscription_status: 'free',
     timezone: 'UTC',
     last_activity_date: new Date().toISOString().split('T')[0],
-    created_at: '2024-01-15T10:00:00.000Z',
+    created_at: '2024-01-01T00:00:00.000Z',
     updated_at: new Date().toISOString(),
   },
 };
+
+// Generate Mock Token
+export const generateMockToken = (userId: number): string => {
+  return `mock_token_user_${userId}_${Date.now()}`;
+};
+
+// Tasks Data
+export const TASKS_DATA: Task[] = [
+  {
+    id: 1,
+    user_id: 1,
+    title: 'Complete first trial',
+    description: 'Finish "The Foundation of Power" trial',
+    source_type: 'manual',
+    status: 'done',
+    completed_at: new Date().toISOString(),
+    created_at: new Date(Date.now() - 86400000).toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: 2,
+    user_id: 1,
+    title: 'Practice strategic thinking',
+    description: 'Apply lessons from your mentor in a real situation',
+    source_type: 'manual',
+    status: 'todo',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+  {
+    id: 3,
+    user_id: 1,
+    title: 'Document all relevant facts',
+    description: 'From council verdict',
+    source_type: 'council',
+    source_name: 'Council Case #1',
+    status: 'todo',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+];
+
+// Journal Data
+export const JOURNAL_DATA: JournalEntry[] = [
+  {
+    id: 1,
+    user_id: 1,
+    entry_type: 'mentor_feedback',
+    title: 'Trial Feedback: The Foundation of Power',
+    content: `**Trial Complete: The Foundation of Power**
+
+**Your Score: 85%**
+
+You demonstrated strong understanding of power dynamics. Your pragmatic approach shows promise.
+
+Keep refining your strategic thinking. Each trial brings you closer to mastery.
+
+— Machiavelli`,
+    created_at: new Date(Date.now() - 86400000).toISOString(),
+    updated_at: new Date(Date.now() - 86400000).toISOString(),
+  },
+  {
+    id: 2,
+    user_id: 1,
+    entry_type: 'saved_insight',
+    title: 'Key Insight: Authority vs Power',
+    content: 'Authority is given, power is taken. True influence comes from the ability to shape outcomes, not just from titles or positions.',
+    created_at: new Date(Date.now() - 172800000).toISOString(),
+    updated_at: new Date(Date.now() - 172800000).toISOString(),
+  },
+];
+
+// Council Cases Data
+export const COUNCIL_CASES: CouncilCase[] = [
+  {
+    id: 1,
+    user_id: 1,
+    dilemma_text: 'I am facing resistance from my team on a new initiative. Should I push forward forcefully or seek consensus?',
+    mentor_views: {
+      machiavelli: 'Power demands decisive action. If the initiative serves your goals, implement it. Resistance fades when results speak.',
+      napoleon: 'A leader must inspire, not just command. Show them the vision, then execute with unwavering commitment.',
+      aurelius: 'Consider whether this resistance reveals flaws in your approach. True strength includes the wisdom to listen and adapt.',
+    },
+    verdict: `The council agrees: **Balance force with wisdom.**
+
+**Immediate Actions:**
+1. Document all relevant facts and stakeholder positions
+2. Identify leverage points and constraints
+3. Prepare multiple scenarios
+
+**Strategic Principles:**
+- Build your foundation carefully (Aurelius)
+- Position yourself advantageously (Machiavelli)
+- Execute decisively when ready (Napoleon)`,
+    verdict_tasks: [
+      'Document all relevant facts',
+      'Identify key stakeholders',
+      'Develop three action plans',
+    ],
+    created_at: new Date(Date.now() - 259200000).toISOString(),
+    updated_at: new Date(Date.now() - 259200000).toISOString(),
+  },
+];
 
 // Curriculum Data
 export const CURRICULUM_DATA: Module[] = [
@@ -40,172 +143,157 @@ export const CURRICULUM_DATA: Module[] = [
             title: 'The Foundation of Power',
             unit_id: 1,
             order_index: 1,
-            lesson_content: `# The Foundation of Power
+            lesson_content: `<h2>The Foundation of Power</h2>
+<p>Power is the ability to influence outcomes and shape the behavior of others. Throughout history, leaders have wielded power through three primary sources:</p>
 
-## Introduction
+<h3>1. Force (Coercive Power)</h3>
+<p>The most direct form of power - the ability to compel obedience through threat or actual use of force. While effective in the short term, it breeds resistance and requires constant vigilance.</p>
 
-Power is not merely the ability to command—it is the art of influence, the mastery of perception, and the strategic positioning of oneself in relation to others.
+<h3>2. Cunning (Expert/Informational Power)</h3>
+<p>Power derived from knowledge, strategy, and the ability to outmaneuver opponents. This is the power of the strategist who wins without fighting.</p>
 
-## Core Principles
+<h3>3. Legitimacy (Legitimate/Referent Power)</h3>
+<p>Authority granted through social structures, traditions, or genuine respect. The most sustainable form of power, as it requires minimal enforcement.</p>
 
-### 1. Sources of Authority
-- **Legitimate Power**: Derived from position and hierarchy
-- **Expert Power**: Born from knowledge and competence
-- **Referent Power**: Earned through respect and admiration
-- **Coercive Power**: Based on fear and consequences
-- **Reward Power**: Stemming from the ability to grant benefits
-
-### 2. The Three Pillars
-Your mentor, Machiavelli, teaches that power rests on three foundations:
-
-1. **Force**: The capacity to compel action
-2. **Cunning**: The intelligence to outmaneuver opponents
-3. **Legitimacy**: The perception of rightful authority
-
-### 3. Practical Application
-True power is maintained through:
-- Strategic alliances
-- Information control
-- Calculated generosity
-- Managed perception
-- Decisive action when necessary
-
-Remember: "It is better to be feared than loved, if you cannot be both."`,
+<p><strong>Key Insight:</strong> The most effective leaders combine all three sources, knowing when to apply each. Machiavelli advised being both "the lion and the fox" - having the strength to intimidate and the cunning to detect traps.</p>`,
             xp_reward: 100,
             passing_score: 70,
+            user_status: 'completed',
+            user_score: 85,
             questions: [
               {
                 id: 1,
-                question_text: 'According to the lesson, which is NOT a source of authority?',
-                question_type: 'multiple_choice',
-                options: ['Legitimate Power', 'Expert Power', 'Inherited Wealth', 'Coercive Power'],
-                correct_answer: 'Inherited Wealth',
-                order_index: 1,
                 trial_id: 1,
+                question_text: 'Which source of power is most sustainable over time?',
+                question_type: 'multiple_choice',
+                options: ['Force', 'Cunning', 'Legitimacy', 'All are equally sustainable'],
+                correct_answer: 'Legitimacy',
+                order_index: 1,
               },
               {
                 id: 2,
-                question_text: 'What are the three pillars of power according to Machiavelli?',
+                trial_id: 1,
+                question_text: 'According to Machiavelli, effective leaders should be:',
                 question_type: 'multiple_choice',
                 options: [
-                  'Force, Cunning, Legitimacy',
-                  'Money, Status, Influence',
-                  'Fear, Love, Respect',
-                  'Knowledge, Wealth, Connections',
+                  'Only strong like the lion',
+                  'Only cunning like the fox',
+                  'Both strong like the lion and cunning like the fox',
+                  'Neither - they should rely on legitimacy alone',
                 ],
-                correct_answer: 'Force, Cunning, Legitimacy',
+                correct_answer: 'Both strong like the lion and cunning like the fox',
                 order_index: 2,
-                trial_id: 1,
               },
               {
                 id: 3,
-                question_text: 'True power is maintained through strategic alliances and information control.',
-                question_type: 'multiple_choice',
-                options: ['True', 'False'],
-                correct_answer: 'True',
-                order_index: 3,
                 trial_id: 1,
+                question_text: 'What is the main disadvantage of ruling through force alone?',
+                question_type: 'multiple_choice',
+                options: [
+                  'It is too expensive',
+                  'It breeds resistance and requires constant vigilance',
+                  'It is morally wrong',
+                  'It is ineffective in all situations',
+                ],
+                correct_answer: 'It breeds resistance and requires constant vigilance',
+                order_index: 3,
               },
               {
                 id: 4,
-                question_text: 'Which type of power is earned through respect and admiration?',
-                question_type: 'multiple_choice',
-                options: ['Legitimate Power', 'Coercive Power', 'Referent Power', 'Reward Power'],
-                correct_answer: 'Referent Power',
-                order_index: 4,
                 trial_id: 1,
+                question_text: 'Cunning as a source of power is best described as:',
+                question_type: 'multiple_choice',
+                options: [
+                  'Physical strength',
+                  'Traditional authority',
+                  'Strategic knowledge and ability to outmaneuver',
+                  'Charismatic leadership',
+                ],
+                correct_answer: 'Strategic knowledge and ability to outmaneuver',
+                order_index: 4,
               },
               {
                 id: 5,
-                question_text: 'Complete this quote: "It is better to be feared than _____, if you cannot be both."',
-                question_type: 'multiple_choice',
-                options: ['respected', 'wealthy', 'loved', 'powerful'],
-                correct_answer: 'loved',
-                order_index: 5,
                 trial_id: 1,
+                question_text: 'The power of legitimacy is effective because:',
+                question_type: 'multiple_choice',
+                options: [
+                  'It requires force to maintain',
+                  'It requires minimal enforcement as people accept it',
+                  'It only works in democracies',
+                  'It can never be challenged',
+                ],
+                correct_answer: 'It requires minimal enforcement as people accept it',
+                order_index: 5,
               },
             ],
-            user_status: 'completed',
-            user_score: 85,
           },
           {
             id: 2,
             title: 'Types of Authority',
             unit_id: 1,
             order_index: 2,
-            lesson_content: `# Types of Authority
+            lesson_content: `<h2>Types of Authority</h2>
+<p>Max Weber identified three pure types of authority that leaders can possess:</p>
 
-## Understanding Different Forms of Power
+<h3>1. Traditional Authority</h3>
+<p>Based on customs, traditions, and the way things have "always been done." Examples include monarchies and tribal leadership.</p>
 
-Authority manifests in various forms, each with unique characteristics and applications.
+<h3>2. Charismatic Authority</h3>
+<p>Based on the exceptional characteristics or qualities of the individual leader. Followers believe in the leader's vision and personality.</p>
 
-## Traditional Authority
-Based on established customs and long-standing practices. This type of authority is inherited and passed down through generations.
+<h3>3. Rational-Legal Authority</h3>
+<p>Based on formal rules, laws, and procedures. Modern democracies and bureaucracies operate on this principle.</p>
 
-## Charismatic Authority
-Derived from personal magnetism and exceptional qualities. Leaders who possess this inspire devotion and loyalty.
-
-## Rational-Legal Authority
-Founded on rules, regulations, and formal positions. This is the bedrock of modern institutions.
-
-## Application in Strategy
-Understanding these types allows you to:
-- Recognize the source of your opponents' power
-- Build multiple foundations for your own authority
-- Adapt your approach to different situations`,
+<p><strong>Strategic Application:</strong> Understanding which type of authority you possess - or which your opponents wield - is crucial for maintaining or challenging power structures.</p>`,
             xp_reward: 100,
             passing_score: 70,
+            user_status: 'current',
             questions: [
               {
                 id: 6,
-                question_text: 'Which type of authority is based on established customs?',
+                trial_id: 2,
+                question_text: 'Which type of authority is based on customs and traditions?',
                 question_type: 'multiple_choice',
-                options: ['Traditional', 'Charismatic', 'Rational-Legal', 'Expert'],
+                options: ['Rational-Legal', 'Charismatic', 'Traditional', 'Democratic'],
                 correct_answer: 'Traditional',
                 order_index: 1,
-                trial_id: 2,
               },
               {
                 id: 7,
-                question_text: 'Charismatic authority is derived from personal magnetism.',
-                question_type: 'multiple_choice',
-                options: ['True', 'False'],
-                correct_answer: 'True',
-                order_index: 2,
                 trial_id: 2,
+                question_text: 'Modern democracies primarily operate on which type of authority?',
+                question_type: 'multiple_choice',
+                options: ['Traditional', 'Charismatic', 'Rational-Legal', 'Mixed'],
+                correct_answer: 'Rational-Legal',
+                order_index: 2,
               },
               {
                 id: 8,
-                question_text: 'What is the foundation of modern institutions?',
-                question_type: 'multiple_choice',
-                options: ['Traditional Authority', 'Charismatic Authority', 'Rational-Legal Authority', 'Divine Right'],
-                correct_answer: 'Rational-Legal Authority',
-                order_index: 3,
                 trial_id: 2,
+                question_text: 'Charismatic authority is most dependent on:',
+                question_type: 'multiple_choice',
+                options: [
+                  'Written laws and procedures',
+                  'Historical precedent',
+                  'The exceptional qualities of the leader',
+                  'Democratic elections',
+                ],
+                correct_answer: 'The exceptional qualities of the leader',
+                order_index: 3,
               },
             ],
-            user_status: 'current',
           },
           {
             id: 3,
-            title: 'Building Influence Networks',
+            title: 'The Nature of Influence',
             unit_id: 1,
             order_index: 3,
-            lesson_content: `# Building Influence Networks
-
-## The Web of Power
-
-Your network is your net worth in the game of power. Strategic relationships multiply your capabilities.
-
-## Key Principles
-- Quality over quantity
-- Diverse connections
-- Reciprocal value
-- Strategic positioning`,
+            lesson_content: '<h2>The Nature of Influence</h2><p>Coming soon...</p>',
             xp_reward: 100,
             passing_score: 70,
-            questions: [],
             user_status: 'locked',
+            questions: [],
           },
         ],
       },
@@ -218,33 +306,25 @@ Your network is your net worth in the game of power. Strategic relationships mul
         trials: [
           {
             id: 4,
-            title: 'Reading the Room',
+            title: 'Reading the Terrain',
             unit_id: 2,
             order_index: 1,
-            lesson_content: `# Reading the Room
-
-## Situational Awareness
-
-The ability to assess power dynamics in any situation is crucial for strategic success.`,
+            lesson_content: '<h2>Reading the Terrain</h2><p>Coming soon...</p>',
             xp_reward: 100,
             passing_score: 70,
-            questions: [],
             user_status: 'locked',
+            questions: [],
           },
           {
             id: 5,
-            title: 'Timing and Opportunity',
+            title: 'Anticipating Moves',
             unit_id: 2,
             order_index: 2,
-            lesson_content: `# Timing and Opportunity
-
-## Seizing the Moment
-
-Napoleon taught that the art of war is the art of timing. Know when to strike.`,
+            lesson_content: '<h2>Anticipating Moves</h2><p>Coming soon...</p>',
             xp_reward: 100,
             passing_score: 70,
-            questions: [],
             user_status: 'locked',
+            questions: [],
           },
         ],
       },
@@ -253,136 +333,10 @@ Napoleon taught that the art of war is the art of timing. Know when to strike.`,
   {
     id: 2,
     title: 'Advanced Manipulation',
-    description: 'Learn the subtle arts of influence',
+    description: 'Master the subtle arts of persuasion',
     order_index: 2,
     completed_trials: 0,
-    total_trials: 4,
+    total_trials: 3,
     units: [],
   },
 ];
-
-// Tasks Data
-export const TASKS_DATA: Task[] = [
-  {
-    id: 1,
-    user_id: 1,
-    title: 'Complete The Foundation of Power trial',
-    description: 'Finish the first trial to understand power dynamics',
-    source_type: 'trial',
-    source_name: 'The Foundation of Power',
-    status: 'done',
-    due_date: new Date().toISOString().split('T')[0],
-    completed_at: new Date(Date.now() - 86400000).toISOString(),
-    created_at: new Date(Date.now() - 172800000).toISOString(),
-    updated_at: new Date(Date.now() - 86400000).toISOString(),
-  },
-  {
-    id: 2,
-    user_id: 1,
-    title: 'Practice strategic thinking',
-    description: 'Analyze a recent decision using power dynamics framework',
-    source_type: 'manual',
-    status: 'todo',
-    due_date: new Date().toISOString().split('T')[0],
-    created_at: new Date(Date.now() - 86400000).toISOString(),
-    updated_at: new Date(Date.now() - 86400000).toISOString(),
-  },
-  {
-    id: 3,
-    user_id: 1,
-    title: 'Reflect on a situation where you held authority',
-    description: 'Write about what made your authority effective or ineffective',
-    source_type: 'council',
-    source_name: 'Council Verdict #1',
-    status: 'todo',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-];
-
-// Journal Entries
-export const JOURNAL_DATA: JournalEntry[] = [
-  {
-    id: 1,
-    user_id: 1,
-    entry_type: 'mentor_feedback',
-    title: 'Feedback on The Foundation of Power',
-    content: `**Machiavelli's Assessment:**
-
-Your understanding of power's foundations shows promise, young strategist. You scored 85%, demonstrating solid comprehension of the core principles.
-
-**Strengths:**
-- Excellent grasp of the three pillars: Force, Cunning, and Legitimacy
-- Strong understanding of different power sources
-- Good recognition of strategic alliance importance
-
-**Areas for Growth:**
-- Deepen your understanding of when to apply force versus cunning
-- Study historical examples of power transitions
-- Practice identifying power dynamics in daily situations
-
-**Recommended Action:**
-Observe three interactions this week. In each, identify:
-1. Who holds power and why
-2. What type of authority is at play
-3. How the power dynamic could shift
-
-Remember: Power is not given, it is taken—but the wise know when to wait and when to seize.`,
-    created_at: new Date(Date.now() - 86400000).toISOString(),
-    updated_at: new Date(Date.now() - 86400000).toISOString(),
-  },
-  {
-    id: 2,
-    user_id: 1,
-    entry_type: 'saved_insight',
-    title: 'Observation: Office Politics',
-    content: `Today I noticed how my manager maintains authority through a combination of legitimate power (position) and expert power (deep knowledge of the systems).
-
-When challenged by a colleague, they didn't resort to pulling rank. Instead, they demonstrated superior understanding of the problem, which naturally reestablished their authority.
-
-This aligns with what I learned about the three pillars—legitimacy backed by actual competence creates the strongest foundation.`,
-    created_at: new Date(Date.now() - 43200000).toISOString(),
-    updated_at: new Date(Date.now() - 43200000).toISOString(),
-  },
-];
-
-// Council Cases
-export const COUNCIL_CASES: CouncilCase[] = [
-  {
-    id: 1,
-    user_id: 1,
-    dilemma_text: 'I discovered my colleague is taking credit for my work in meetings with upper management. Should I confront them directly or go to my boss?',
-    mentor_views: {
-      machiavelli: 'Direct confrontation reveals your hand too soon. First, gather evidence. Then, ensure your work is visible to management through other channels—copy them on key emails, present in meetings yourself. Let your colleague realize their deception is no longer sustainable. Only then, if necessary, bring documented proof to your superior. Never fight a battle you can avoid winning through superior positioning.',
-      napoleon: 'Strike swiftly and decisively, but choose your battlefield wisely. Document your contributions immediately. Request a private meeting with your boss, present the facts without emotion, and propose a solution: clear attribution processes going forward. Boldness wins respect, but recklessness invites disaster. Confront the issue head-on, but do so with prepared evidence and a proposed path forward.',
-      aurelius: 'Consider first: what is within your control? You cannot control your colleague\'s character, but you can control your response. Document your work meticulously. Seek first to understand their motivation—perhaps they feel insecure. If possible, address this privately with them, giving them a chance to correct course. If this fails, bring the matter to your superior calmly and factually. Your integrity is your true victory, regardless of the outcome.',
-    },
-    verdict: `The council agrees: Act with strategic patience while maintaining clear boundaries.
-
-**Immediate Actions:**
-1. Begin documenting your contributions systematically
-2. Increase your visibility to management through legitimate channels
-3. Approach your colleague privately first—give them one chance to self-correct
-4. If behavior continues, present documented evidence to your superior
-
-**Strategic Principles:**
-- Never engage in battles you can avoid through superior positioning (Machiavelli)
-- Act decisively when you do engage, with evidence prepared (Napoleon)
-- Maintain your integrity and focus on what you can control (Aurelius)
-
-The strongest position is one where your value is undeniable and your character unimpeachable. Build this foundation, and the situation will resolve itself—with or without confrontation.`,
-    verdict_tasks: [
-      'Document all your contributions for the next two weeks',
-      'Schedule brief check-ins with your manager to discuss your projects',
-      'Prepare a private conversation script for your colleague',
-      'Create a folder of evidence showing your work timeline',
-    ],
-    created_at: new Date(Date.now() - 172800000).toISOString(),
-    updated_at: new Date(Date.now() - 172800000).toISOString(),
-  },
-];
-
-// Generate mock token
-export const generateMockToken = (userId: number): string => {
-  return `mock_token_user_${userId}_${Date.now()}`;
-};
