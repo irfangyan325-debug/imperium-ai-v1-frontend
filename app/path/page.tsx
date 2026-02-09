@@ -33,7 +33,7 @@ export default function PathPage() {
     const progress = getTrialProgress();
     
     // Update trial statuses based on progress
-    const updatedModules = CURRICULUM_DATA.map(module => ({
+    const updatedModules: Module[] = CURRICULUM_DATA.map(module => ({
       ...module,
       units: module.units?.map(unit => ({
         ...unit,
@@ -41,14 +41,14 @@ export default function PathPage() {
           const trialProgress = progress[trial.id];
           return {
             ...trial,
-            user_status: trialProgress?.status || trial.user_status,
+            user_status: (trialProgress?.status as 'locked' | 'current' | 'completed') || trial.user_status || 'locked',
             user_score: trialProgress?.score,
           };
         }),
       })),
     }));
     
-    setModules(updatedModules )
+    setModules(updatedModules);
     
     // Auto-expand first incomplete module
     const firstIncomplete = updatedModules.find(
@@ -71,20 +71,20 @@ export default function PathPage() {
 
   if (authLoading || loading || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="spinner"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-imperial-black to-imperial-darkGray">
+        <div className="w-12 h-12 border-4 border-imperial-gold border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen pb-20 bg-gradient-dark">
+    <div className="min-h-screen pb-20 bg-gradient-to-b from-imperial-black to-imperial-darkGray">
       {/* Header Section */}
       <header className="bg-imperial-darkGray border-b border-imperial-gray sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-serif text-gradient-gold">Your Path</h1>
+              <h1 className="text-3xl font-serif bg-gradient-to-r from-imperial-gold to-imperial-lightGold bg-clip-text text-transparent">Your Path</h1>
               <p className="text-imperial-cream opacity-70 text-sm">
                 Progress through structured trials to master the art of power
               </p>
@@ -130,7 +130,7 @@ export default function PathPage() {
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <div className="w-12 h-12 rounded-lg bg-gradient-gold flex items-center justify-center text-2xl flex-shrink-0">
+                        <div className="w-12 h-12 rounded-lg bg-gradient-to-r from-imperial-gold to-imperial-lightGold flex items-center justify-center text-2xl flex-shrink-0">
                           📚
                         </div>
                         <div>
@@ -158,9 +158,9 @@ export default function PathPage() {
                       <span>Progress</span>
                       <span>{completionPercent}% Complete</span>
                     </div>
-                    <div className="progress-bar">
+                    <div className="w-full h-3 bg-imperial-gray rounded-full overflow-hidden">
                       <div
-                        className="progress-bar-fill"
+                        className="h-full bg-gradient-to-r from-imperial-gold to-imperial-lightGold rounded-full transition-all duration-500"
                         style={{ width: `${completionPercent}%` }}
                       />
                     </div>
@@ -216,7 +216,7 @@ export default function PathPage() {
                                     isCompleted
                                       ? 'bg-green-600'
                                       : isCurrent
-                                      ? 'bg-gradient-gold'
+                                      ? 'bg-gradient-to-r from-imperial-gold to-imperial-lightGold'
                                       : 'bg-imperial-darkGray'
                                   }`}>
                                     {isCompleted ? '✓' : isLocked ? '🔒' : '📖'}
@@ -228,11 +228,11 @@ export default function PathPage() {
                                       {trial.title}
                                     </h4>
                                     <div className="flex items-center gap-3 text-xs">
-                                      <span className={`badge ${getTrialStatusColor(status)}`}>
+                                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${getTrialStatusColor(status)}`}>
                                         {status === 'locked' ? 'Locked' : status === 'current' ? 'Available' : 'Completed'}
                                       </span>
                                       <span className="text-imperial-gold">
-                                        +{trial.xp_reward} XP
+                                        +{trial.xp_reward || 0} XP
                                       </span>
                                       {trial.user_score !== undefined && (
                                         <span className="text-imperial-cream opacity-70">
