@@ -8,15 +8,15 @@ import Button from '@/components/common/Button';
 import Card from '@/components/common/Card';
 import ProgressBar from '@/components/common/ProgressBar';
 import { getStoredTasks, getTrialProgress } from '@/lib/storage';
-import { MENTORS, CURRICULUM_DATA } from '@/utils/constants';
+import { MENTORS } from '@/utils/constants';
+import { CURRICULUM_DATA } from '@/lib/staticData';
 import { formatNumber, calculateXPProgress, getRankFromXP } from '@/utils/helpers';
-import toast from 'react-hot-toast';
 import type { Task, Trial } from '@/types';
 
 export default function HallPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
-
+  
   const [todayTasks, setTodayTasks] = useState<Task[]>([]);
   const [currentTrial, setCurrentTrial] = useState<Trial | null>(null);
   const [loading, setLoading] = useState(true);
@@ -43,49 +43,34 @@ export default function HallPage() {
     // Get today's tasks
     const allTasks = getStoredTasks();
     const today = new Date().toISOString().split('T')[0];
-    const tasksToday = allTasks.filter(
-      (t) => t.created_at.split('T')[0] === today || t.due_date === today
+    const tasksToday = allTasks.filter(t => 
+      t.created_at.split('T')[0] === today || t.due_date === today
     );
     setTodayTasks(tasksToday);
-
+    
     // Get completed tasks count
-    const completed = allTasks.filter((t) => t.status === 'done').length;
+    const completed = allTasks.filter(t => t.status === 'done').length;
     setTasksCompleted(completed);
-
+    
     // Get trial progress
     const progress = getTrialProgress();
-    const completedTrials = Object.values(progress).filter(
-      (p) => p.status === 'completed'
-    ).length;
+    const completedTrials = Object.values(progress).filter(p => p.status === 'completed').length;
     setTrialsCompleted(completedTrials);
-
-    // Find current trial safely
+    
+    // Find current trial
     let foundCurrentTrial: Trial | null = null;
     for (const module of CURRICULUM_DATA) {
       for (const unit of module.units || []) {
-        const trial = unit.trials?.find((t) => t.user_status === 'current');
+        const trial = unit.trials?.find(t => t.user_status === 'current');
         if (trial) {
-          // Fill missing fields and cast user_status
-          foundCurrentTrial = {
-            id: trial.id,
-            title: trial.title,
-            user_status:
-              (trial.user_status as 'locked' | 'current' | 'completed') ||
-              'locked',
-            unit_id: trial.unit_id ?? unit.id,
-            order_index: trial.order_index ?? 0,
-            lesson_content: trial.lesson_content ?? '',
-            xp_reward: trial.xp_reward ?? 0,
-            passing_score: trial.passing_score ?? 0,
-            questions: trial.questions ?? [],
-          };
+          foundCurrentTrial = trial;
           break;
         }
       }
       if (foundCurrentTrial) break;
     }
     setCurrentTrial(foundCurrentTrial);
-
+    
     setLoading(false);
   };
 
@@ -95,41 +80,35 @@ export default function HallPage() {
 
   if (authLoading || loading || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="spinner"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-imperial-black to-imperial-darkGray">
+        <div className="w-12 h-12 border-4 border-imperial-gold border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
   const mentor = user.primary_mentor ? MENTORS[user.primary_mentor] : null;
   const xpProgress = calculateXPProgress(user.influence_xp);
-  const todoPendingTasks = todayTasks.filter((t) => t.status === 'todo');
+  const todoPendingTasks = todayTasks.filter(t => t.status === 'todo');
 
   return (
-    <div className="min-h-screen pb-20 bg-gradient-dark">
+    <div className="min-h-screen pb-20 bg-gradient-to-b from-imperial-black to-imperial-darkGray">
       {/* Header Section */}
       <header className="bg-imperial-darkGray border-b border-imperial-gray sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-serif text-gradient-gold">
-                Command Hall
-              </h1>
+              <h1 className="text-3xl font-serif bg-gradient-to-r from-imperial-gold to-imperial-lightGold bg-clip-text text-transparent">Command Hall</h1>
               <p className="text-imperial-cream opacity-70 text-sm">
                 Welcome back, {user.email.split('@')[0]}
               </p>
             </div>
             <div className="flex items-center gap-4 text-sm">
               <div className="text-center">
-                <div className="text-imperial-gold font-bold">
-                  {user.current_rank}
-                </div>
+                <div className="text-imperial-gold font-bold">{user.current_rank}</div>
                 <div className="text-imperial-cream opacity-60">Rank</div>
               </div>
               <div className="text-center">
-                <div className="text-imperial-gold font-bold">
-                  {formatNumber(user.influence_xp)}
-                </div>
+                <div className="text-imperial-gold font-bold">{formatNumber(user.influence_xp)}</div>
                 <div className="text-imperial-cream opacity-60">XP</div>
               </div>
               <div className="text-center">
@@ -144,7 +123,10 @@ export default function HallPage() {
       <main className="max-w-7xl mx-auto px-4 py-6 space-y-6">
         {/* Mentor Section */}
         {mentor && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
             <Card variant="gold">
               <div className="flex items-center gap-6">
                 <div className="w-24 h-24 rounded-full bg-imperial-darkGray border-4 border-imperial-gold flex items-center justify-center text-5xl shadow-gold flex-shrink-0">
@@ -183,7 +165,12 @@ export default function HallPage() {
               <p className="text-sm text-imperial-cream opacity-80 mb-4">
                 {formatNumber(user.influence_xp)} XP
               </p>
-              <ProgressBar value={xpProgress.progress} max={100} size="sm" showLabel={false} />
+              <ProgressBar 
+                value={xpProgress.progress}
+                max={100}
+                size="sm"
+                showLabel={false}
+              />
               <p className="text-xs text-imperial-cream opacity-60 mt-2">
                 {xpProgress.remaining} XP to next rank
               </p>
@@ -194,8 +181,12 @@ export default function HallPage() {
           <Card>
             <div className="text-center">
               <div className="text-4xl mb-2">📚</div>
-              <h3 className="text-3xl font-bold text-imperial-gold mb-2">{trialsCompleted}</h3>
-              <p className="text-sm text-imperial-cream opacity-80">Trials Completed</p>
+              <h3 className="text-3xl font-bold text-imperial-gold mb-2">
+                {trialsCompleted}
+              </h3>
+              <p className="text-sm text-imperial-cream opacity-80">
+                Trials Completed
+              </p>
             </div>
           </Card>
 
@@ -203,8 +194,12 @@ export default function HallPage() {
           <Card>
             <div className="text-center">
               <div className="text-4xl mb-2">✅</div>
-              <h3 className="text-3xl font-bold text-imperial-gold mb-2">{tasksCompleted}</h3>
-              <p className="text-sm text-imperial-cream opacity-80">Tasks Completed</p>
+              <h3 className="text-3xl font-bold text-imperial-gold mb-2">
+                {tasksCompleted}
+              </h3>
+              <p className="text-sm text-imperial-cream opacity-80">
+                Tasks Completed
+              </p>
             </div>
           </Card>
         </motion.div>
@@ -216,33 +211,45 @@ export default function HallPage() {
           transition={{ delay: 0.2 }}
           className="grid md:grid-cols-2 gap-6"
         >
+          {/* Continue Path Card */}
           <button onClick={() => router.push(currentTrial ? `/trial/${currentTrial.id}` : '/path')}>
             <Card hover className="group">
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-lg bg-gradient-gold flex items-center justify-center text-3xl flex-shrink-0 group-hover:scale-110 transition-transform">
+                <div className="w-16 h-16 rounded-lg bg-gradient-to-r from-imperial-gold to-imperial-lightGold flex items-center justify-center text-3xl flex-shrink-0 group-hover:scale-110 transition-transform">
                   🗺️
                 </div>
                 <div className="flex-1 text-left">
-                  <h3 className="text-xl font-serif text-imperial-gold mb-1">Continue Path</h3>
+                  <h3 className="text-xl font-serif text-imperial-gold mb-1">
+                    Continue Path
+                  </h3>
                   {currentTrial ? (
-                    <p className="text-sm text-imperial-cream opacity-80">{currentTrial.title}</p>
+                    <p className="text-sm text-imperial-cream opacity-80">
+                      {currentTrial.title}
+                    </p>
                   ) : (
-                    <p className="text-sm text-imperial-cream opacity-80">View your curriculum</p>
+                    <p className="text-sm text-imperial-cream opacity-80">
+                      View your curriculum
+                    </p>
                   )}
                 </div>
               </div>
             </Card>
           </button>
 
+          {/* Summon Council Card */}
           <button onClick={() => router.push('/council')}>
             <Card hover className="group">
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-lg bg-gradient-gold flex items-center justify-center text-3xl flex-shrink-0 group-hover:scale-110 transition-transform">
+                <div className="w-16 h-16 rounded-lg bg-gradient-to-r from-imperial-gold to-imperial-lightGold flex items-center justify-center text-3xl flex-shrink-0 group-hover:scale-110 transition-transform">
                   👥
                 </div>
                 <div className="flex-1 text-left">
-                  <h3 className="text-xl font-serif text-imperial-gold mb-1">Summon Council</h3>
-                  <p className="text-sm text-imperial-cream opacity-80">Seek wisdom from all three masters</p>
+                  <h3 className="text-xl font-serif text-imperial-gold mb-1">
+                    Summon Council
+                  </h3>
+                  <p className="text-sm text-imperial-cream opacity-80">
+                    Seek wisdom from all three masters
+                  </p>
                 </div>
               </div>
             </Card>
@@ -250,10 +257,20 @@ export default function HallPage() {
         </motion.div>
 
         {/* Daily Tasks */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-2xl font-serif text-imperial-gold">Today's Tasks</h2>
-            <Button variant="ghost" size="sm" onClick={() => router.push('/tasks')}>View All</Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => router.push('/tasks')}
+            >
+              View All
+            </Button>
           </div>
 
           {todoPendingTasks.length > 0 ? (
@@ -269,8 +286,12 @@ export default function HallPage() {
                     </button>
                     <div className="flex-1">
                       <h3 className="font-semibold text-imperial-cream mb-1">{task.title}</h3>
-                      {task.description && <p className="text-sm text-imperial-cream opacity-70">{task.description}</p>}
-                      {task.source_name && <p className="text-xs text-imperial-gold mt-1">From: {task.source_name}</p>}
+                      {task.description && (
+                        <p className="text-sm text-imperial-cream opacity-70">{task.description}</p>
+                      )}
+                      {task.source_name && (
+                        <p className="text-xs text-imperial-gold mt-1">From: {task.source_name}</p>
+                      )}
                     </div>
                   </div>
                 </Card>
@@ -280,35 +301,42 @@ export default function HallPage() {
             <Card>
               <div className="text-center py-8">
                 <p className="text-2xl mb-2">🎉</p>
-                <p className="text-imperial-cream opacity-80">No pending tasks. Your discipline is commendable.</p>
+                <p className="text-imperial-cream opacity-80">
+                  No pending tasks. Your discipline is commendable.
+                </p>
               </div>
             </Card>
           )}
         </motion.div>
 
         {/* Quick Actions */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-4"
+        >
           <Button variant="outline" onClick={() => router.push('/journal')} className="h-auto py-4">
             <div className="flex flex-col items-center gap-2">
               <span className="text-2xl">📖</span>
               <span className="text-sm">Journal</span>
             </div>
           </Button>
-
+          
           <Button variant="outline" onClick={() => router.push('/tasks')} className="h-auto py-4">
             <div className="flex flex-col items-center gap-2">
               <span className="text-2xl">✓</span>
               <span className="text-sm">Tasks</span>
             </div>
           </Button>
-
+          
           <Button variant="outline" onClick={() => router.push('/path')} className="h-auto py-4">
             <div className="flex flex-col items-center gap-2">
               <span className="text-2xl">🗺️</span>
               <span className="text-sm">Path</span>
             </div>
           </Button>
-
+          
           <Button variant="outline" onClick={() => router.push('/profile')} className="h-auto py-4">
             <div className="flex flex-col items-center gap-2">
               <span className="text-2xl">⚙️</span>
@@ -322,15 +350,24 @@ export default function HallPage() {
       <nav className="fixed bottom-0 left-0 right-0 bg-imperial-darkGray border-t border-imperial-gray">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-around py-3">
-            <button onClick={() => router.push('/hall')} className="flex flex-col items-center gap-1 text-imperial-gold">
+            <button
+              onClick={() => router.push('/hall')}
+              className="flex flex-col items-center gap-1 text-imperial-gold"
+            >
               <span className="text-2xl">🏛️</span>
               <span className="text-xs">Hall</span>
             </button>
-            <button onClick={() => router.push('/path')} className="flex flex-col items-center gap-1 text-imperial-cream opacity-60 hover:opacity-100">
+            <button
+              onClick={() => router.push('/path')}
+              className="flex flex-col items-center gap-1 text-imperial-cream opacity-60 hover:opacity-100"
+            >
               <span className="text-2xl">🗺️</span>
               <span className="text-xs">Path</span>
             </button>
-            <button onClick={() => router.push('/profile')} className="flex flex-col items-center gap-1 text-imperial-cream opacity-60 hover:opacity-100">
+            <button
+              onClick={() => router.push('/profile')}
+              className="flex flex-col items-center gap-1 text-imperial-cream opacity-60 hover:opacity-100"
+            >
               <span className="text-2xl">👤</span>
               <span className="text-xs">Profile</span>
             </button>
