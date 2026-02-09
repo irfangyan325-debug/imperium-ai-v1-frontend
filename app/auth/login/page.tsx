@@ -67,7 +67,7 @@ export default function LoginPage() {
           <h1 className="text-5xl font-serif text-gradient-gold mb-2">
             IMPERIUM AI
           </h1>
-          <p className="text-imperial-cream opacity-70">
+          <p className="text-imperial-cream opacity-80">
             Return to Power
           </p>
         </motion.div>
@@ -127,21 +127,13 @@ export default function LoginPage() {
                 New to IMPERIUM?{' '}
                 <button
                   onClick={() => router.push('/auth/signup')}
-                  className="text-imperial-gold hover:text-imperial-lightGold font-semibold"
+                  className="text-imperial-gold font-semibold hover:text-imperial-lightGold transition-colors"
                 >
                   Begin Your Ascent
                 </button>
               </p>
             </div>
 
-            {/* Demo Credentials */}
-            <div className="mt-6 p-4 bg-imperial-darkGray rounded-lg border border-imperial-gray">
-              <p className="text-xs text-imperial-gold font-semibold mb-2">Demo Credentials:</p>
-              <p className="text-xs text-imperial-cream opacity-70">
-                Email: test@example.com<br />
-                Password: password123
-              </p>
-            </div>
           </Card>
         </motion.div>
 
