@@ -3,6 +3,7 @@
 //   content: [
 //     './app/**/*.{js,ts,jsx,tsx,mdx}',
 //     './components/**/*.{js,ts,jsx,tsx,mdx}',
+//     './lib/**/*.{js,ts,jsx,tsx,mdx}',
 //   ],
 //   theme: {
 //     extend: {
@@ -60,7 +61,8 @@
 //     },
 //   },
 //   plugins: [],
-// };
+// }
+
 
 
 
@@ -74,17 +76,15 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        imperial: {
-          black: '#0A0A0A',
-          darkGray: '#1A1A1A',
-          gray: '#2A2A2A',
-          lightGray: '#3A3A3A',
-          gold: '#D4AF37',
-          lightGold: '#E5C158',
-          darkGold: '#B8941F',
-          bronze: '#CD7F32',
-          cream: '#F5F5DC',
-        },
+        'imperial-black': '#0A0A0A',
+        'imperial-dark-gray': '#1A1A1A',
+        'imperial-gray': '#2A2A2A',
+        'imperial-light-gray': '#3A3A3A',
+        'imperial-gold': '#D4AF37',
+        'imperial-light-gold': '#E5C158',
+        'imperial-dark-gold': '#B8941F',
+        'imperial-bronze': '#CD7F32',
+        'imperial-cream': '#F5F5DC',
       },
       fontFamily: {
         serif: ['Playfair Display', 'Georgia', 'serif'],
@@ -127,6 +127,4 @@ module.exports = {
     },
   },
   plugins: [],
-}
-
-
+};
