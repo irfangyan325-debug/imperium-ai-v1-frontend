@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/app/contexts/AuthContext';
 import Button from '@/components/common/Button';
 import Card from '@/components/common/Card';
 import { 
@@ -15,7 +15,7 @@ import {
   addJournalEntry
 } from '@/lib/storage';
 import { MENTORS, COUNCIL } from '@/utils/constants';
-import toast from 'hot-toast';
+import toast from 'react-hot-toast';
 import type { CouncilCase } from '@/types';
 
 export default function CouncilPage() {

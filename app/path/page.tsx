@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/app/contexts/AuthContext';
 import Card from '@/components/common/Card';
 import { CURRICULUM_DATA } from '@/lib/staticData';
 import { getTrialProgress } from '@/lib/storage';
