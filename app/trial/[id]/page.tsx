@@ -9,7 +9,7 @@ import Card from '@/components/common/Card';
 import { CURRICULUM_DATA } from '@/lib/staticData';
 import { setTrialProgress, updateUserXP, updateUserStreak, addJournalEntry } from '@/lib/storage';
 import toast from 'react-hot-toast';
-import type { Trial, Question } from '@/types';
+import type { Trial } from '@/types';
 
 export default function TrialPage() {
   const router = useRouter();
@@ -29,7 +29,7 @@ export default function TrialPage() {
     let foundTrial: Trial | null = null;
     for (const curriculumModule of CURRICULUM_DATA) {
       for (const unit of curriculumModule.units || []) {
-        const t = unit.trials?.find(trial => trial.id === trialId);
+        const t = unit.trials?.find(trialItem => trialItem.id === trialId);
         if (t) {
           foundTrial = t;
           break;
