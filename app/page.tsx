@@ -1,65 +1,121 @@
-import Image from "next/image";
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+import { useAuth } from './contexts/AuthContext';
 
 export default function Home() {
+  const router = useRouter();
+  const { isAuth, loading } = useAuth();
+
+  useEffect(() => {
+    if (!loading && isAuth) {
+      router.push('/hall');
+    }
+  }, [isAuth, loading, router]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="spinner"></div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <main className="min-h-screen flex flex-col items-center justify-center px-4 relative overflow-hidden bg-gradient-dark">
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-gradient-radial from-imperial-darkGray to-imperial-black opacity-50"></div>
+      <div className="absolute inset-0">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-imperial-gold opacity-5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-imperial-gold opacity-5 rounded-full blur-3xl"></div>
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 text-center max-w-4xl">
+        {/* Logo/Title */}
+        <motion.div
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <h1 className="text-7xl md:text-9xl font-serif text-gradient-gold mb-4 tracking-tight">
+            IMPERIUM AI
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+          <div className="h-1 w-64 mx-auto bg-gradient-gold mb-8"></div>
+        </motion.div>
+
+        {/* Tagline */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.8 }}
+          className="text-2xl md:text-3xl text-imperial-cream mb-4 font-serif"
+        >
+          Master the Art of Power
+        </motion.p>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5, duration: 0.8 }}
+          className="text-lg text-imperial-cream opacity-80 mb-12 max-w-2xl mx-auto"
+        >
+          Learn from history's greatest strategists. Machiavelli teaches pragmatism.
+          Napoleon commands action. Marcus Aurelius guides wisdom.
+        </motion.p>
+
+        {/* Mentor Preview */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7, duration: 0.8 }}
+          className="flex justify-center gap-8 mb-12"
+        >
+          {['⚔️', '⚡', '🏛️'].map((icon, index) => (
+            <motion.div
+              key={index}
+              whileHover={{ scale: 1.1, rotate: 5 }}
+              className="w-20 h-20 rounded-full bg-imperial-darkGray border-2 border-imperial-gold flex items-center justify-center text-4xl shadow-gold"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+              {icon}
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* CTA Buttons */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9, duration: 0.8 }}
+          className="flex flex-col sm:flex-row gap-4 justify-center"
+        >
+          <button
+            onClick={() => router.push('/auth/signup')}
+            className="btn-primary text-xl"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            Begin Your Ascent
+          </button>
+          
+          <button
+            onClick={() => router.push('/auth/login')}
+            className="px-6 py-3 text-imperial-gold border-2 border-imperial-gold font-semibold rounded-lg hover:bg-imperial-gold hover:text-imperial-black transition-all duration-300 text-xl"
           >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+            Return to Power
+          </button>
+        </motion.div>
+
+        {/* Footer Text */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.1, duration: 0.8 }}
+          className="mt-16 text-sm text-imperial-cream opacity-60 italic"
+        >
+          "The supreme art of war is to subdue the enemy without fighting." — Sun Tzu
+        </motion.p>
+      </div>
+    </main>
   );
 }

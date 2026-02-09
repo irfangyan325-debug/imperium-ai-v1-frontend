@@ -1,4 +1,5 @@
-import { STORAGE_KEYS, TASKS_DATA, JOURNAL_DATA, COUNCIL_CASES, CURRICULUM_DATA } from './staticData';
+import { TASKS_DATA, JOURNAL_DATA, COUNCIL_CASES, CURRICULUM_DATA, generateMockToken } from './staticData';
+import { STORAGE_KEYS } from '../utils/constants';
 import type { User, Task, JournalEntry, CouncilCase, Trial } from '../types';
 
 // User Management

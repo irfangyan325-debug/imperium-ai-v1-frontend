@@ -386,14 +386,3 @@ The strongest position is one where your value is undeniable and your character 
 export const generateMockToken = (userId: number): string => {
   return `mock_token_user_${userId}_${Date.now()}`;
 };
-
-// Storage keys
-export const STORAGE_KEYS = {
-  TOKEN: 'imperium_token',
-  USER: 'imperium_user',
-  TASKS: 'imperium_tasks',
-  JOURNAL: 'imperium_journal',
-  COUNCIL_CASES: 'imperium_council_cases',
-  LAST_COUNCIL_SUMMON: 'imperium_last_council_summon',
-  TRIAL_PROGRESS: 'imperium_trial_progress',
-};
