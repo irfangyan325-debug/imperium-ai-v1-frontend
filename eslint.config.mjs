@@ -19,6 +19,7 @@ const eslintConfig = [
         varsIgnorePattern: "^_"
       }],
       "@next/next/no-assign-module-variable": "off",
+      "react/no-unescaped-entities": "off",
     },
   },
 ];

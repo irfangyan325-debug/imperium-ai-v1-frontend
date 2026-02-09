@@ -61,7 +61,7 @@ export default function TasksPage() {
       setShowCreateModal(false);
       setNewTask({ title: '', description: '' });
       loadTasks();
-    } catch (error: any) {
+    } catch (_error) {
       toast.error('Failed to create task');
     } finally {
       setCreating(false);
@@ -80,7 +80,7 @@ export default function TasksPage() {
       
       toast.success('Task completed! 🎉');
       loadTasks();
-    } catch (error: any) {
+    } catch (_error) {
       toast.error('Failed to complete task');
     }
   };
@@ -90,7 +90,7 @@ export default function TasksPage() {
       updateTask(taskId, { status: 'skipped' });
       toast.success('Task skipped');
       loadTasks();
-    } catch (error: any) {
+    } catch (_error) {
       toast.error('Failed to skip task');
     }
   };
@@ -102,15 +102,15 @@ export default function TasksPage() {
       deleteTask(taskId);
       toast.success('Task deleted');
       loadTasks();
-    } catch (error: any) {
+    } catch (_error) {
       toast.error('Failed to delete task');
     }
   };
 
   if (authLoading || loading || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="spinner"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-imperial-black to-imperial-darkGray">
+        <div className="w-12 h-12 border-4 border-imperial-gold border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -124,13 +124,13 @@ export default function TasksPage() {
   const skippedCount = tasks.filter(t => t.status === 'skipped').length;
 
   return (
-    <div className="min-h-screen pb-20 bg-gradient-dark">
+    <div className="min-h-screen pb-20 bg-gradient-to-b from-imperial-black to-imperial-darkGray">
       {/* Header Section */}
       <header className="bg-imperial-darkGray border-b border-imperial-gray sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-serif text-gradient-gold">Your Tasks</h1>
+              <h1 className="text-3xl font-serif bg-gradient-to-r from-imperial-gold to-imperial-lightGold bg-clip-text text-transparent">Your Tasks</h1>
               <p className="text-imperial-cream opacity-70 text-sm">
                 Track your daily actions and maintain your streak
               </p>
@@ -196,10 +196,10 @@ export default function TasksPage() {
             {['all', 'todo', 'done', 'skipped'].map((f) => (
               <button
                 key={f}
-                onClick={() => setFilter(f as any)}
+                onClick={() => setFilter(f as typeof filter)}
                 className={`px-4 py-2 rounded-lg font-semibold transition-all ${
                   filter === f
-                    ? 'bg-gradient-gold text-imperial-black'
+                    ? 'bg-gradient-to-r from-imperial-gold to-imperial-lightGold text-imperial-black'
                     : 'bg-imperial-darkGray text-imperial-cream hover:bg-imperial-gray'
                 }`}
               >
@@ -261,7 +261,7 @@ export default function TasksPage() {
                       )}
 
                       <div className="flex items-center gap-3 text-xs flex-wrap">
-                        <span className={`badge ${getTaskStatusColor(task.status)}`}>
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${getTaskStatusColor(task.status)}`}>
                           {task.status}
                         </span>
 
@@ -361,7 +361,7 @@ export default function TasksPage() {
               type="text"
               value={newTask.title}
               onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-              className="input"
+              className="w-full px-4 py-3 bg-imperial-darkGray border-2 border-imperial-gray rounded-lg text-imperial-cream placeholder-imperial-cream placeholder:opacity-40 focus:border-imperial-gold focus:outline-none transition-colors"
               placeholder="What needs to be done?"
               maxLength={255}
             />
@@ -374,7 +374,7 @@ export default function TasksPage() {
             <textarea
               value={newTask.description}
               onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
-              className="input min-h-[100px] resize-y"
+              className="w-full px-4 py-3 bg-imperial-darkGray border-2 border-imperial-gray rounded-lg text-imperial-cream placeholder-imperial-cream placeholder:opacity-40 focus:border-imperial-gold focus:outline-none transition-colors min-h-[100px] resize-y"
               placeholder="Add more details..."
               maxLength={1000}
             />
