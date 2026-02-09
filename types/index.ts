@@ -44,11 +44,11 @@ export interface Unit {
 export interface Trial {
   id: number;
   title: string;
-  unit_id: number;
-  order_index: number;
-  lesson_content: string;
-  xp_reward: number;
-  passing_score: number;
+  unit_id?: number;            // optional to allow partial trial objects
+  order_index?: number;        // optional
+  lesson_content?: string;     // optional
+  xp_reward?: number;          // optional
+  passing_score?: number;      // optional
   questions?: Question[];
   user_status?: 'locked' | 'current' | 'completed';
   user_score?: number;
@@ -56,12 +56,12 @@ export interface Trial {
 
 export interface Question {
   id: number;
-  trial_id: number;
+  trial_id?: number;           // optional
   question_text: string;
   question_type: 'multiple_choice' | 'short_answer';
   options?: string[];
   correct_answer: string;
-  order_index: number;
+  order_index?: number;        // optional
 }
 
 // Task Types
