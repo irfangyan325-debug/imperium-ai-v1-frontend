@@ -18,7 +18,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!authLoading && isAuth) {
-      router.push('/hall');
+      router.push('/selection-hall');
     }
   }, [isAuth, authLoading, router]);
 

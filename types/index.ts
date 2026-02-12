@@ -122,6 +122,7 @@ export interface Mentor {
   focus: string;
   color: string;
   icon: string;
+  imageUrl: string;
 }
 
 // Rank Types

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { useAuth } from '@/app/contexts/AuthContext';
 import Button from '@/components/common/Button';
 import Card from '@/components/common/Card';
@@ -129,9 +130,21 @@ export default function HallPage() {
           >
             <Card variant="gold">
               <div className="flex items-center gap-6">
-                <div className="w-24 h-24 rounded-full bg-imperial-darkGray border-4 border-imperial-gold flex items-center justify-center text-5xl shadow-gold flex-shrink-0">
-                  {mentor.icon}
+                {/* Mentor Image */}
+                <div className="relative w-24 h-24 flex-shrink-0">
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-imperial-gold to-imperial-darkGold opacity-20 blur-xl"></div>
+                  <div className="relative w-full h-full rounded-full border-4 border-imperial-gold shadow-gold overflow-hidden bg-imperial-darkGray">
+                    <Image
+                      src={mentor.imageUrl}
+                      alt={mentor.name}
+                      fill
+                      className="object-cover"
+                      priority
+                    />
+                  </div>
                 </div>
+                
+                {/* Mentor Info */}
                 <div className="flex-1">
                   <h2 className="text-2xl font-serif text-imperial-gold mb-1">
                     {mentor.name}
@@ -140,7 +153,7 @@ export default function HallPage() {
                     {mentor.title} • Your Guide
                   </p>
                   <p className="text-sm italic text-imperial-cream opacity-70">
-                    "{mentor.quote}"
+                    &quot;{mentor.quote}&quot;
                   </p>
                 </div>
               </div>
@@ -263,7 +276,7 @@ export default function HallPage() {
           transition={{ delay: 0.3 }}
         >
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-serif text-imperial-gold">Today's Tasks</h2>
+            <h2 className="text-2xl font-serif text-imperial-gold">Today&apos;s Tasks</h2>
             <Button
               variant="ghost"
               size="sm"

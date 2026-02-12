@@ -13,6 +13,7 @@ export const MENTORS: Record<string, Mentor> = {
     focus: 'Strategic manipulation, maintaining power, understanding human nature',
     color: '#CD7F32',
     icon: '⚔️',
+    imageUrl: '/images/mentors/machiavelli.png',
   },
   napoleon: {
     id: 'napoleon',
@@ -25,6 +26,7 @@ export const MENTORS: Record<string, Mentor> = {
     focus: 'Leadership, strategic execution, seizing opportunities',
     color: '#4169E1',
     icon: '⚡',
+    imageUrl: '/images/mentors/napoleon.png',
   },
   aurelius: {
     id: 'aurelius',
@@ -37,6 +39,7 @@ export const MENTORS: Record<string, Mentor> = {
     focus: 'Self-discipline, virtue, inner strength, emotional regulation',
     color: '#708090',
     icon: '🏛️',
+    imageUrl: '/images/mentors/aurelius.png',
   },
 };
 

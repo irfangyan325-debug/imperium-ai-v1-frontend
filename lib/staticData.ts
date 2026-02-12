@@ -6,7 +6,7 @@ export const USERS_DB: Record<string, User & { password: string }> = {
     id: 1,
     email: 'test@example.com',
     password: 'password123',
-    primary_mentor: 'machiavelli',
+    // primary_mentor: 'machiavelli',
     current_rank: 'Strategist',
     influence_xp: 750,
     streak_days: 5,

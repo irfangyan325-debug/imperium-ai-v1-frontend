@@ -65,11 +65,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       toast.success('Welcome back!');
       
-      if (!userData.primary_mentor) {
-        router.push('/selection-hall');
-      } else {
-        router.push('/hall');
-      }
+      // ✅ ALWAYS redirect to selection-hall after login
+      router.push('/selection-hall');
       
       return { success: true };
     } catch {
@@ -106,7 +103,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsAuth(true);
       
       toast.success('Account created successfully!');
-      router.push('/hall');
+      router.push('/selection-hall');
       
       return { success: true };
     } catch {

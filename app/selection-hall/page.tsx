@@ -1,8 +1,10 @@
+
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { useAuth } from '@/app/contexts/AuthContext';
 import Button from '@/components/common/Button';
 import Card from '@/components/common/Card';
@@ -18,8 +20,14 @@ function SelectionHallContent() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!authLoading && user && user.primary_mentor) {
-      router.push('/hall');
+    if (!authLoading && !user) {
+      router.push('/auth/login');
+      return;
+    }
+
+    // ✅ Set pre-selected mentor if user already has one
+    if (user && user.primary_mentor) {
+      setSelectedMentor(user.primary_mentor);
     }
   }, [user, authLoading, router]);
 
@@ -44,9 +52,13 @@ function SelectionHallContent() {
         return;
       }
     } else if (user) {
-      // Update existing user
-      updateUser({ primary_mentor: selectedMentor as 'machiavelli' | 'napoleon' | 'aurelius' });
-      toast.success('Mentor selected!');
+      // Update existing user (or confirm existing mentor)
+      if (user.primary_mentor !== selectedMentor) {
+        updateUser({ primary_mentor: selectedMentor as 'machiavelli' | 'napoleon' | 'aurelius' });
+        toast.success('Mentor updated!');
+      } else {
+        toast.success('Mentor confirmed!');
+      }
       router.push('/hall');
     } else {
       toast.error('Please sign up or log in first');
@@ -83,7 +95,9 @@ function SelectionHallContent() {
             The Selection Hall
           </h1>
           <p className="text-xl text-imperial-cream opacity-80 max-w-2xl mx-auto">
-            Choose your mentor wisely. Their teachings will shape your path to power.
+            {user?.primary_mentor 
+              ? 'Confirm your mentor or choose a new one.'
+              : 'Choose your mentor wisely. Their teachings will shape your path to power.'}
           </p>
         </motion.div>
 
@@ -107,10 +121,19 @@ function SelectionHallContent() {
                     selectedMentor === mentor.id ? 'scale-105' : ''
                   }`}
                 >
-                  {/* Mentor Icon */}
+                  {/* Mentor Image */}
                   <div className="text-center mb-6">
-                    <div className="w-24 h-24 mx-auto rounded-full bg-imperial-darkGray border-4 border-imperial-gold flex items-center justify-center text-5xl shadow-gold mb-4">
-                      {mentor.icon}
+                    <div className="relative w-32 h-32 mx-auto mb-4">
+                      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-imperial-gold to-imperial-darkGold opacity-20 blur-xl"></div>
+                      <div className="relative w-full h-full rounded-full border-4 border-imperial-gold shadow-gold overflow-hidden bg-imperial-darkGray">
+                        <Image
+                          src={mentor.imageUrl}
+                          alt={mentor.name}
+                          fill
+                          className="object-cover"
+                          priority={index < 3}
+                        />
+                      </div>
                     </div>
                     <h2 className="text-2xl font-serif text-imperial-gold mb-1">
                       {mentor.name}
@@ -153,6 +176,15 @@ function SelectionHallContent() {
                       </span>
                     </div>
                   )}
+                  
+                  {/* Current Mentor Badge */}
+                  {user?.primary_mentor === mentor.id && (
+                    <div className="mt-2 text-center">
+                      <span className="text-xs text-imperial-gold">
+                        Current Mentor
+                      </span>
+                    </div>
+                  )}
                 </Card>
               </button>
             </motion.div>
@@ -172,12 +204,18 @@ function SelectionHallContent() {
             disabled={!selectedMentor || loading}
             size="lg"
           >
-            {selectedMentor ? `Begin with ${MENTORS[selectedMentor as keyof typeof MENTORS].name}` : 'Select a Mentor'}
+            {selectedMentor 
+              ? user?.primary_mentor === selectedMentor
+                ? 'Confirm & Continue'
+                : `Begin with ${MENTORS[selectedMentor as keyof typeof MENTORS].name}`
+              : 'Select a Mentor'}
           </Button>
 
-          <p className="mt-4 text-sm text-imperial-cream opacity-60">
-            Your choice is permanent and will define your learning style.
-          </p>
+          {!user?.primary_mentor && (
+            <p className="mt-4 text-sm text-imperial-cream opacity-60">
+              Your choice is permanent and will define your learning style.
+            </p>
+          )}
         </motion.div>
       </div>
     </div>
