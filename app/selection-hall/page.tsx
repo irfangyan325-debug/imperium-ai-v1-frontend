@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
@@ -8,6 +7,7 @@ import Image from 'next/image';
 import { useAuth } from '@/app/contexts/AuthContext';
 import Button from '@/components/common/Button';
 import Card from '@/components/common/Card';
+import PageBackground from '@/components/common/PageBackground';
 import { MENTORS } from '@/utils/constants';
 import toast from 'react-hot-toast';
 
@@ -25,7 +25,6 @@ function SelectionHallContent() {
       return;
     }
 
-    // ✅ Set pre-selected mentor if user already has one
     if (user && user.primary_mentor) {
       setSelectedMentor(user.primary_mentor);
     }
@@ -39,12 +38,10 @@ function SelectionHallContent() {
 
     setLoading(true);
 
-    // Check if coming from signup
     const email = searchParams.get('email');
     const password = searchParams.get('password');
 
     if (email && password) {
-      // Complete registration
       const result = await register(email, password, selectedMentor);
       if (!result.success) {
         toast.error(result.error || 'Registration failed');
@@ -52,7 +49,6 @@ function SelectionHallContent() {
         return;
       }
     } else if (user) {
-      // Update existing user (or confirm existing mentor)
       if (user.primary_mentor !== selectedMentor) {
         updateUser({ primary_mentor: selectedMentor as 'machiavelli' | 'napoleon' | 'aurelius' });
         toast.success('Mentor updated!');
@@ -70,22 +66,18 @@ function SelectionHallContent() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-imperial-black to-imperial-darkGray">
+      <div className="min-h-screen flex items-center justify-center">
+        <PageBackground />
         <div className="w-12 h-12 border-4 border-imperial-gold border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen px-4 py-8 bg-gradient-to-b from-imperial-black to-imperial-darkGray">
-      {/* Background Effects */}
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-imperial-gold opacity-10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-imperial-gold opacity-10 rounded-full blur-3xl"></div>
-      </div>
-
+    <div className="min-h-screen px-4 py-8">
+      <PageBackground />
+      
       <div className="relative z-10 max-w-6xl mx-auto">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -101,7 +93,6 @@ function SelectionHallContent() {
           </p>
         </motion.div>
 
-        {/* Mentor Cards */}
         <div className="grid md:grid-cols-3 gap-8 mb-12">
           {Object.values(MENTORS).map((mentor, index) => (
             <motion.div
@@ -121,7 +112,6 @@ function SelectionHallContent() {
                     selectedMentor === mentor.id ? 'scale-105' : ''
                   }`}
                 >
-                  {/* Mentor Image */}
                   <div className="text-center mb-6">
                     <div className="relative w-32 h-32 mx-auto mb-4">
                       <div className="absolute inset-0 rounded-full bg-gradient-to-br from-imperial-gold to-imperial-darkGold opacity-20 blur-xl"></div>
@@ -143,13 +133,11 @@ function SelectionHallContent() {
                     </p>
                   </div>
 
-                  {/* Description */}
                   <div className="space-y-4 text-left">
                     <p className="text-sm text-imperial-cream opacity-80">
                       {mentor.description}
                     </p>
 
-                    {/* Teaching Style */}
                     <div>
                       <h4 className="text-xs font-semibold text-imperial-gold mb-2">
                         Teaching Style:
@@ -159,7 +147,6 @@ function SelectionHallContent() {
                       </p>
                     </div>
 
-                    {/* Quote */}
                     <div className="pt-4 border-t border-imperial-gray">
                       <p className="text-xs italic text-imperial-gold">
                         &quot;{mentor.quote}&quot;
@@ -167,7 +154,6 @@ function SelectionHallContent() {
                     </div>
                   </div>
 
-                  {/* Selection Indicator */}
                   {selectedMentor === mentor.id && (
                     <div className="mt-4 text-center">
                       <span className="inline-flex items-center gap-2 bg-gradient-to-r from-imperial-gold to-imperial-lightGold text-imperial-black px-4 py-2 rounded-lg font-semibold">
@@ -177,7 +163,6 @@ function SelectionHallContent() {
                     </div>
                   )}
                   
-                  {/* Current Mentor Badge */}
                   {user?.primary_mentor === mentor.id && (
                     <div className="mt-2 text-center">
                       <span className="text-xs text-imperial-gold">
@@ -191,7 +176,6 @@ function SelectionHallContent() {
           ))}
         </div>
 
-        {/* Confirm Button */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -225,7 +209,8 @@ function SelectionHallContent() {
 export default function SelectionHallPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-imperial-black to-imperial-darkGray">
+      <div className="min-h-screen flex items-center justify-center">
+        <PageBackground />
         <div className="w-12 h-12 border-4 border-imperial-gold border-t-transparent rounded-full animate-spin"></div>
       </div>
     }>

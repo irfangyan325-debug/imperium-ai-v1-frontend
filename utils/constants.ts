@@ -1,5 +1,16 @@
 import type { Mentor, Rank } from '../types';
 
+
+export const BACKGROUND_IMAGES = [
+  '/images/mentors/bg2.jpg',
+  '/images/mentors/bg1.jpg',
+  '/images/mentors/bg1.jpg',
+];
+
+// Function to get random background
+export const getRandomBackground = () => {
+  return BACKGROUND_IMAGES[Math.floor(Math.random() * BACKGROUND_IMAGES.length)];
+};
 // Mentor Information
 export const MENTORS: Record<string, Mentor> = {
   machiavelli: {

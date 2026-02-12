@@ -14,6 +14,7 @@ import { CURRICULUM_DATA } from '@/lib/staticData';
 import { formatNumber, calculateXPProgress, getRankFromXP } from '@/utils/helpers';
 import type { Task, Trial } from '@/types';
 
+
 export default function HallPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
@@ -90,10 +91,9 @@ export default function HallPage() {
   const mentor = user.primary_mentor ? MENTORS[user.primary_mentor] : null;
   const xpProgress = calculateXPProgress(user.influence_xp);
   const todoPendingTasks = todayTasks.filter(t => t.status === 'todo');
-
+  
   return (
     <div className="min-h-screen pb-20 bg-gradient-to-b from-imperial-black to-imperial-darkGray">
-      {/* Header Section */}
       <header className="bg-imperial-darkGray border-b border-imperial-gray sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
