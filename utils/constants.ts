@@ -2,8 +2,8 @@ import type { Mentor, Rank } from '../types';
 
 
 export const BACKGROUND_IMAGES = [
-  '/images/mentors/bg.jpg',
   '/images/mentors/bg1.jpg',
+  '/images/mentors/bg.jpg',
   '/images/mentors/bg2.jpg',
 ];
 
