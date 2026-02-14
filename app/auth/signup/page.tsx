@@ -10,7 +10,7 @@ import toast from 'react-hot-toast';
 
 export default function SignupPage() {
   const router = useRouter();
-  const { register, isAuth, loading: authLoading } = useAuth();
+  const { isAuth, loading: authLoading } = useAuth();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -51,19 +51,18 @@ export default function SignupPage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="spinner"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-imperial-black to-imperial-darkGray">
+        <div className="w-12 h-12 border-4 border-imperial-gold border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 bg-gradient-dark">
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 relative overflow-hidden bg-gradient-to-b from-imperial-black to-imperial-darkGray">
       {/* Background Effects */}
-      <div className="absolute inset-0 bg-gradient-radial from-imperial-darkGray to-imperial-black opacity-50"></div>
-      <div className="absolute inset-0">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-imperial-gold opacity-5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-imperial-gold opacity-5 rounded-full blur-3xl"></div>
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-imperial-gold opacity-10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-imperial-gold opacity-10 rounded-full blur-3xl"></div>
       </div>
 
       <div className="relative z-10 w-full max-w-md">
@@ -73,10 +72,10 @@ export default function SignupPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-8"
         >
-          <h1 className="text-5xl font-serif text-gradient-gold mb-2">
+          <h1 className="text-5xl md:text-6xl font-serif mb-2 bg-gradient-to-r from-imperial-gold to-imperial-lightGold bg-clip-text text-transparent">
             IMPERIUM AI
           </h1>
-          <p className="text-imperial-cream opacity-70">
+          <p className="text-imperial-cream opacity-70 text-lg">
             Begin Your Ascent
           </p>
         </motion.div>
@@ -101,7 +100,7 @@ export default function SignupPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="input"
+                  className="w-full px-4 py-3 bg-imperial-darkGray border-2 border-imperial-gray rounded-lg text-imperial-cream placeholder-imperial-cream placeholder:opacity-40 focus:border-imperial-gold focus:outline-none transition-colors"
                   placeholder="your@email.com"
                   autoComplete="email"
                 />
@@ -115,7 +114,7 @@ export default function SignupPage() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="input"
+                  className="w-full px-4 py-3 bg-imperial-darkGray border-2 border-imperial-gray rounded-lg text-imperial-cream placeholder-imperial-cream placeholder:opacity-40 focus:border-imperial-gold focus:outline-none transition-colors"
                   placeholder="••••••••"
                   autoComplete="new-password"
                 />
@@ -132,7 +131,7 @@ export default function SignupPage() {
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="input"
+                  className="w-full px-4 py-3 bg-imperial-darkGray border-2 border-imperial-gray rounded-lg text-imperial-cream placeholder-imperial-cream placeholder:opacity-40 focus:border-imperial-gold focus:outline-none transition-colors"
                   placeholder="••••••••"
                   autoComplete="new-password"
                 />
@@ -153,7 +152,7 @@ export default function SignupPage() {
                 Already have an account?{' '}
                 <button
                   onClick={() => router.push('/auth/login')}
-                  className="text-imperial-gold hover:text-imperial-lightGold font-semibold"
+                  className="text-imperial-gold hover:text-imperial-lightGold font-semibold transition-colors"
                 >
                   Sign In
                 </button>
@@ -167,10 +166,11 @@ export default function SignupPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="mt-8 text-center text-sm text-imperial-cream opacity-60 italic"
+          className="mt-8 text-center text-sm text-imperial-cream opacity-60 italic px-4"
         >
-          "The greatest danger for most of us is not that our aim is too high and we miss it, but that it is too low and we reach it."
-          <br />— Michelangelo
+          &quot;The greatest danger for most of us is not that our aim is too high and we miss it, but that it is too low and we reach it.&quot;
+          <br />
+          <span className="text-imperial-gold">— Michelangelo</span>
         </motion.p>
       </div>
     </div>

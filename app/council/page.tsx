@@ -6,15 +6,17 @@ import { motion } from 'framer-motion';
 import { useAuth } from '@/app/contexts/AuthContext';
 import Button from '@/components/common/Button';
 import Card from '@/components/common/Card';
+import PageBackground from '@/components/common/PageBackground';
+import Modal from '@/components/common/Modal';
+import { MENTORS } from '@/utils/constants';
 import { 
   canSummonCouncil, 
   recordCouncilSummon, 
-  getStoredCouncilCases, 
+  getStoredCouncilCases,
   setStoredCouncilCases,
   addTask,
-  addJournalEntry
+  addJournalEntry 
 } from '@/lib/storage';
-import { MENTORS, COUNCIL } from '@/utils/constants';
 import toast from 'react-hot-toast';
 import type { CouncilCase } from '@/types';
 
@@ -23,12 +25,12 @@ export default function CouncilPage() {
   const { user, loading: authLoading } = useAuth();
   
   const [dilemma, setDilemma] = useState('');
+  const [loading, setLoading] = useState(false);
   const [canSummon, setCanSummon] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
+  const [showResults, setShowResults] = useState(false);
   const [currentCase, setCurrentCase] = useState<CouncilCase | null>(null);
   const [recentCases, setRecentCases] = useState<CouncilCase[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [showingRecent, setShowingRecent] = useState(false);
+  const [viewCase, setViewCase] = useState<CouncilCase | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -37,220 +39,278 @@ export default function CouncilPage() {
     }
 
     if (user) {
-      checkCouncilAvailability();
-      loadRecentCases();
+      loadCouncilData();
     }
   }, [user, authLoading, router]);
 
-  const checkCouncilAvailability = () => {
-    setCanSummon(canSummonCouncil());
-    setLoading(false);
-  };
-
-  const loadRecentCases = () => {
+  const loadCouncilData = () => {
+    const canSummonToday = canSummonCouncil();
+    setCanSummon(canSummonToday);
+    
     const cases = getStoredCouncilCases();
     setRecentCases(cases.slice(0, 5));
   };
 
-  const generateMentorResponse = (dilemmaText: string, mentorId: string): string => {
-    const mentor = MENTORS[mentorId as keyof typeof MENTORS];
-    
+  const generateMentorResponse = (_mentor: string, _dilemmaText: string): string => {
+    // Mock AI responses for each mentor
     const responses = {
-      machiavelli: `Direct confrontation reveals your hand too soon. First, gather evidence and build alliances. Position yourself strategically before making any move. Remember: it is better to appear weak while being strong than to appear strong while being weak. Act only when victory is certain.`,
-      napoleon: `Bold action is required, but choose your moment wisely. Strike decisively when you strike, but ensure you have prepared the ground. Half-measures breed disaster. Commit fully to your course once decided, and execute with speed and precision.`,
-      aurelius: `Focus on what is within your control. You cannot change others, but you can control your response and maintain your integrity. Ask yourself: what would virtue demand in this situation? Act accordingly, regardless of the outcome.`
+      machiavelli: `Your situation requires pragmatic analysis. Consider these points:
+
+1. **Assess the Power Dynamics**: Who holds leverage? Identify their motivations and weaknesses.
+
+2. **Calculate the Risks**: What are the potential costs of action versus inaction? Choose the path that preserves your position.
+
+3. **Maintain Appearances**: Whether you act decisively or diplomatically, ensure your reputation remains intact. Perception shapes reality.
+
+The question is not what is right, but what is effective. Act accordingly.`,
+      
+      napoleon: `This calls for decisive action. Here's my counsel:
+
+1. **Speed is Essential**: Delay breeds doubt. Once you've chosen your course, execute with conviction.
+
+2. **Concentrate Your Forces**: Don't dilute your efforts. Focus all resources on the critical point of decision.
+
+3. **Lead from the Front**: Your commitment will inspire others. Show no hesitation in your resolve.
+
+Fortune favors the bold, but only when boldness is backed by preparation. Strike now.`,
+      
+      aurelius: `Before acting, examine your principles:
+
+1. **What is Within Your Control?**: Focus only on your choices and responses, not on external circumstances.
+
+2. **Is This Aligned with Virtue?**: Will your action demonstrate wisdom, justice, courage, and temperance?
+
+3. **What Would the Best Version of Yourself Do?**: Rise above immediate reactions and choose the path of integrity.
+
+Remember: we cannot control what happens to us, only how we respond. Choose wisely.`
     };
+
+    return responses[_mentor as keyof typeof responses];
+  };
+
+  const handleSummonCouncil = async () => {
+    if (!user) return;
     
-    return responses[mentorId as keyof typeof responses];
-  };
-
-  const generateVerdict = (dilemmaText: string): string => {
-    return `The council agrees on a balanced approach:
-
-**Immediate Actions:**
-1. Document the situation thoroughly
-2. Assess all stakeholders and their motivations
-3. Identify your leverage points and constraints
-4. Prepare multiple scenarios and responses
-
-**Strategic Principles:**
-- Never act from emotion alone (Aurelius)
-- Position yourself advantageously before engaging (Machiavelli)
-- When you act, do so decisively and completely (Napoleon)
-
-The strongest position combines preparation, principle, and decisive action. Build your foundation carefully, then move with confidence when the moment is right.`;
-  };
-
-  const generateTasks = (dilemmaText: string): string[] => {
-    return [
-      'Document all relevant facts and evidence',
-      'Identify key stakeholders and their interests',
-      'Develop three potential courses of action',
-      'Consult with a trusted advisor',
-      'Set a deadline for your decision'
-    ];
-  };
-
-  const handleSubmit = async () => {
-    if (!dilemma.trim()) {
-      toast.error('Please describe your dilemma');
+    if (!canSummon) {
+      toast.error('Council can only be summoned once per day');
       return;
     }
 
-    if (dilemma.length < COUNCIL.MIN_DILEMMA_LENGTH) {
-      toast.error(`Dilemma must be at least ${COUNCIL.MIN_DILEMMA_LENGTH} characters`);
+    if (dilemma.length < 10) {
+      toast.error('Please describe your dilemma in more detail');
       return;
     }
 
-    setSubmitting(true);
-    
-    // Simulate AI processing
+    setLoading(true);
+
+    // Simulate AI processing delay
     await new Promise(resolve => setTimeout(resolve, 2000));
 
-    const cases = getStoredCouncilCases();
+    // Generate responses from each mentor
+    const mentorViews = {
+      machiavelli: generateMentorResponse('machiavelli', dilemma),
+      napoleon: generateMentorResponse('napoleon', dilemma),
+      aurelius: generateMentorResponse('aurelius', dilemma),
+    };
+
+    // Generate unified verdict
+    const verdict = `The council has deliberated on your dilemma. While each master offers a unique perspective, they converge on these key principles:
+
+**Immediate Actions:**
+1. Document all relevant facts and stakeholder positions
+2. Identify your sources of leverage and constraints
+3. Prepare multiple scenarios based on different outcomes
+
+**Strategic Principles:**
+- Build your foundation carefully (Aurelius)
+- Position yourself advantageously (Machiavelli)
+- Execute decisively when ready (Napoleon)
+
+The path forward requires both wisdom and action. Reflect on these perspectives, then choose with conviction.`;
+
+    // Create council case
     const newCase: CouncilCase = {
-      id: Math.max(0, ...cases.map(c => c.id)) + 1,
-      user_id: user!.id,
+      id: Date.now(),
+      user_id: user.id,
       dilemma_text: dilemma,
-      mentor_views: {
-        machiavelli: generateMentorResponse(dilemma, 'machiavelli'),
-        napoleon: generateMentorResponse(dilemma, 'napoleon'),
-        aurelius: generateMentorResponse(dilemma, 'aurelius'),
-      },
-      verdict: generateVerdict(dilemma),
-      verdict_tasks: generateTasks(dilemma),
+      mentor_views: mentorViews,
+      verdict,
+      verdict_tasks: [
+        'Document all relevant facts',
+        'Identify key stakeholders',
+        'Develop three action plans',
+      ],
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
 
+    // Save to storage
+    const cases = getStoredCouncilCases();
     cases.unshift(newCase);
     setStoredCouncilCases(cases);
+
+    // Record summon
     recordCouncilSummon();
-    
+
     setCurrentCase(newCase);
-    setDilemma('');
+    setShowResults(true);
     setCanSummon(false);
-    setSubmitting(false);
+    setLoading(false);
     
     toast.success('The council has spoken!');
   };
 
   const handleCreateTasks = () => {
-    if (!currentCase) return;
+    if (!currentCase || !user) return;
 
-    currentCase.verdict_tasks?.forEach(taskTitle => {
+    currentCase.verdict_tasks?.forEach(task => {
       addTask({
-        user_id: user!.id,
-        title: taskTitle,
+        user_id: user.id,
+        title: task,
         source_type: 'council',
-        source_name: `Council Case #${currentCase.id}`,
+        source_name: 'Council Verdict',
         status: 'todo',
       });
     });
 
-    toast.success('Tasks created from verdict!');
+    toast.success(`${currentCase.verdict_tasks?.length || 0} tasks created!`);
     router.push('/tasks');
   };
 
   const handleSaveToJournal = () => {
     if (!currentCase) return;
 
+    const journalContent = `**Your Dilemma:**
+${currentCase.dilemma_text}
+
+**Council's Verdict:**
+${currentCase.verdict}
+
+**Machiavelli's Perspective:**
+${currentCase.mentor_views.machiavelli}
+
+**Napoleon's Perspective:**
+${currentCase.mentor_views.napoleon}
+
+**Marcus Aurelius's Perspective:**
+${currentCase.mentor_views.aurelius}`;
+
     addJournalEntry({
       entry_type: 'council_verdict',
-      title: `Council Verdict: ${currentCase.dilemma_text.substring(0, 50)}...`,
-      content: `**Your Dilemma:**\n${currentCase.dilemma_text}\n\n**Council Verdict:**\n${currentCase.verdict}`,
+      title: 'Council Verdict: ' + new Date().toLocaleDateString(),
+      content: journalContent,
     });
 
     toast.success('Saved to journal!');
   };
 
-  if (authLoading || loading || !user) {
+  const handleNewDilemma = () => {
+    setShowResults(false);
+    setCurrentCase(null);
+    setDilemma('');
+  };
+
+  if (authLoading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="spinner"></div>
+        <PageBackground />
+        <div className="w-12 h-12 border-4 border-imperial-gold border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen pb-20 bg-gradient-dark">
-      {/* Header Section */}
-      <header className="bg-imperial-darkGray border-b border-imperial-gray">
+    <div className="min-h-screen pb-20">
+      <PageBackground />
+
+      {/* Header */}
+      <header className="bg-imperial-darkGray/80 backdrop-blur-sm border-b border-imperial-gray sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <div>
-            <h1 className="text-3xl font-serif text-gradient-gold">The Council Chamber</h1>
-            <p className="text-imperial-cream opacity-70 text-sm">
-              Seek wisdom from all three masters
-            </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-serif bg-gradient-to-r from-imperial-gold to-imperial-lightGold bg-clip-text text-transparent">Council Chamber</h1>
+              <p className="text-imperial-cream opacity-70 text-sm">
+                Seek wisdom from the three masters
+              </p>
+            </div>
+            <div className="flex items-center gap-4 text-sm">
+              <div className="text-center">
+                <div className="text-imperial-gold font-bold">{user.current_rank}</div>
+                <div className="text-imperial-cream opacity-60">Rank</div>
+              </div>
+            </div>
           </div>
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
-        {!currentCase ? (
+      <main className="max-w-5xl mx-auto px-4 py-6 space-y-6">
+        {!showResults ? (
           <>
-            {/* Council Introduction */}
+            {/* Three Mentors Display */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
               <Card variant="gold">
                 <div className="text-center mb-6">
-                  <div className="flex justify-center gap-8 mb-4">
-                    {Object.values(MENTORS).map((mentor) => (
-                      <div
-                        key={mentor.id}
-                        className="w-16 h-16 rounded-full bg-imperial-darkGray border-2 border-imperial-gold flex items-center justify-center text-3xl shadow-gold"
-                      >
-                        {mentor.icon}
-                      </div>
-                    ))}
-                  </div>
                   <h2 className="text-2xl font-serif text-imperial-gold mb-2">
-                    The Three Masters Await
+                    The Council of Three
                   </h2>
                   <p className="text-imperial-cream opacity-80">
-                    Present your dilemma. Each master will offer their unique perspective,
-                    then deliver a unified verdict.
+                    Present your dilemma to receive wisdom from all three masters
                   </p>
                 </div>
 
+                <div className="flex justify-center gap-8 mb-6">
+                  {Object.values(MENTORS).map((mentor) => (
+                    <div key={mentor.id} className="text-center">
+                      <div className="w-20 h-20 mx-auto rounded-full bg-imperial-darkGray border-4 border-imperial-gold flex items-center justify-center text-4xl shadow-gold mb-2">
+                        {mentor.icon}
+                      </div>
+                      <p className="text-xs text-imperial-gold font-semibold">{mentor.name.split(' ')[0]}</p>
+                    </div>
+                  ))}
+                </div>
+
                 {!canSummon && (
-                  <div className="bg-imperial-darkGray border border-imperial-gold p-4 rounded-lg mb-4">
-                    <p className="text-imperial-gold text-center">
-                      ⏳ The council can only be summoned once per day.
-                      Return tomorrow for more wisdom.
+                  <div className="mb-4 p-4 bg-imperial-darkGray rounded-lg border border-imperial-gold">
+                    <p className="text-sm text-imperial-cream text-center">
+                      ⏳ The council can only be summoned once per day. Return tomorrow for new wisdom.
                     </p>
                   </div>
                 )}
+              </Card>
+            </motion.div>
 
-                {/* Dilemma Input */}
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-imperial-cream mb-2">
-                      State Your Dilemma
-                    </label>
-                    <textarea
-                      value={dilemma}
-                      onChange={(e) => setDilemma(e.target.value)}
-                      disabled={!canSummon}
-                      className="input min-h-[150px] resize-y"
-                      placeholder="Describe the situation you face. What decision weighs upon you? What forces are in tension?"
-                      maxLength={COUNCIL.MAX_DILEMMA_LENGTH}
-                    />
-                    <div className="flex justify-between text-xs text-imperial-cream opacity-60 mt-1">
-                      <span>{COUNCIL.MIN_DILEMMA_LENGTH} character minimum</span>
-                      <span>{dilemma.length} / {COUNCIL.MAX_DILEMMA_LENGTH}</span>
-                    </div>
-                  </div>
-
+            {/* Dilemma Input */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <Card>
+                <h3 className="text-xl font-serif text-imperial-gold mb-4">Your Dilemma</h3>
+                
+                <textarea
+                  value={dilemma}
+                  onChange={(e) => setDilemma(e.target.value)}
+                  className="w-full px-4 py-3 bg-imperial-darkGray border-2 border-imperial-gray rounded-lg text-imperial-cream placeholder-imperial-cream placeholder:opacity-40 focus:border-imperial-gold focus:outline-none transition-colors min-h-[200px] resize-y"
+                  placeholder="Describe your situation, challenge, or decision you face..."
+                  maxLength={2000}
+                  disabled={!canSummon}
+                />
+                
+                <div className="flex justify-between items-center mt-4">
+                  <span className="text-xs text-imperial-cream opacity-60">
+                    {dilemma.length} / 2000 characters
+                  </span>
+                  
                   <Button
-                    onClick={handleSubmit}
-                    loading={submitting}
-                    disabled={submitting || !canSummon || dilemma.length < COUNCIL.MIN_DILEMMA_LENGTH}
-                    fullWidth
+                    onClick={handleSummonCouncil}
+                    loading={loading}
+                    disabled={!canSummon || loading || dilemma.length < 10}
                   >
-                    {submitting ? 'Consulting the Masters...' : 'Summon the Council'}
+                    Summon the Council
                   </Button>
                 </div>
               </Card>
@@ -263,114 +323,86 @@ The strongest position combines preparation, principle, and decisive action. Bui
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
               >
-                <button
-                  onClick={() => setShowingRecent(!showingRecent)}
-                  className="w-full text-left mb-4"
-                >
-                  <div className="flex items-center justify-between text-imperial-gold">
-                    <h3 className="text-xl font-serif">Recent Verdicts</h3>
-                    <span className="text-2xl">{showingRecent ? '▼' : '▶'}</span>
-                  </div>
-                </button>
-
-                {showingRecent && (
-                  <div className="space-y-3">
-                    {recentCases.map((case_) => (
-                      <Card key={case_.id}>
-                        <p className="text-imperial-cream opacity-80 mb-2 line-clamp-2">
-                          {case_.dilemma_text}
-                        </p>
-                        <p className="text-sm text-imperial-gold">
-                          {new Date(case_.created_at).toLocaleDateString()}
-                        </p>
-                      </Card>
-                    ))}
-                  </div>
-                )}
+                <h3 className="text-xl font-serif text-imperial-gold mb-4">Recent Cases</h3>
+                <div className="space-y-3">
+                  {recentCases.map((caseItem) => (
+                    <Card key={caseItem.id} hover>
+                      <button
+                        onClick={() => setViewCase(caseItem)}
+                        className="w-full text-left"
+                      >
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <p className="text-imperial-cream line-clamp-2 mb-2">
+                              {caseItem.dilemma_text}
+                            </p>
+                            <p className="text-xs text-imperial-gold">
+                              {new Date(caseItem.created_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <span className="text-imperial-gold ml-4">→</span>
+                        </div>
+                      </button>
+                    </Card>
+                  ))}
+                </div>
               </motion.div>
             )}
           </>
         ) : (
-          /* Council Verdict */
+          /* Results View */
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="space-y-6"
           >
-            {/* Dilemma Recap */}
+            {/* Your Dilemma */}
             <Card variant="gold">
-              <h3 className="text-xl font-serif text-imperial-gold mb-3">Your Dilemma</h3>
-              <p className="text-imperial-cream opacity-90 italic">
-                "{currentCase.dilemma_text}"
+              <h3 className="text-xl font-serif text-imperial-gold mb-4">Your Dilemma</h3>
+              <p className="text-imperial-cream opacity-90 leading-relaxed">
+                {currentCase?.dilemma_text}
               </p>
             </Card>
 
-            {/* Mentor Perspectives */}
-            {Object.entries(currentCase.mentor_views).map(([mentorId, view]) => {
-              const mentor = MENTORS[mentorId as keyof typeof MENTORS];
-              return (
-                <Card key={mentorId}>
-                  <div className="flex items-start gap-4">
-                    <div className="w-16 h-16 rounded-full bg-imperial-darkGray border-2 border-imperial-gold flex items-center justify-center text-3xl flex-shrink-0">
-                      {mentor.icon}
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="text-lg font-serif text-imperial-gold mb-2">
-                        {mentor.name}
-                      </h4>
-                      <p className="text-imperial-cream opacity-90 leading-relaxed">
-                        {view}
-                      </p>
-                    </div>
+            {/* Mentor Responses */}
+            {Object.entries(MENTORS).map(([mentorId, mentor]) => (
+              <Card key={mentorId}>
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-16 h-16 rounded-full bg-imperial-darkGray border-4 border-imperial-gold flex items-center justify-center text-3xl shadow-gold flex-shrink-0">
+                    {mentor.icon}
                   </div>
-                </Card>
-              );
-            })}
+                  <div>
+                    <h4 className="text-xl font-serif text-imperial-gold">{mentor.name}</h4>
+                    <p className="text-sm text-imperial-cream opacity-70">{mentor.title}</p>
+                  </div>
+                </div>
+                <div className="prose prose-invert max-w-none">
+                  <p className="text-imperial-cream opacity-90 leading-relaxed whitespace-pre-line">
+                    {currentCase?.mentor_views[mentorId as keyof typeof currentCase.mentor_views]}
+                  </p>
+                </div>
+              </Card>
+            ))}
 
             {/* Unified Verdict */}
-            <Card className="border-4 border-imperial-gold">
-              <div className="text-center mb-4">
-                <div className="text-5xl mb-2">⚖️</div>
-                <h3 className="text-2xl font-serif text-imperial-gold">
-                  Council Verdict
-                </h3>
+            <Card variant="gold">
+              <h3 className="text-2xl font-serif text-imperial-gold mb-4">The Council's Verdict</h3>
+              <div className="prose prose-invert max-w-none">
+                <p className="text-imperial-cream opacity-90 leading-relaxed whitespace-pre-line">
+                  {currentCase?.verdict}
+                </p>
               </div>
-              <div 
-                className="text-imperial-cream leading-relaxed text-lg mb-6"
-                dangerouslySetInnerHTML={{ 
-                  __html: currentCase.verdict
-                    .replace(/\*\*(.*?)\*\*/g, '<strong class="text-imperial-gold">$1</strong>')
-                    .replace(/\n/g, '<br/>')
-                }}
-              />
-
-              {/* Verdict Tasks */}
-              {currentCase.verdict_tasks && currentCase.verdict_tasks.length > 0 && (
-                <div className="border-t border-imperial-gray pt-4">
-                  <h4 className="text-lg font-serif text-imperial-gold mb-3">
-                    Recommended Actions
-                  </h4>
-                  <ul className="space-y-2 mb-4">
-                    {currentCase.verdict_tasks.map((task, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <span className="text-imperial-gold mt-1">•</span>
-                        <span className="text-imperial-cream opacity-90">{task}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <Button onClick={handleCreateTasks} fullWidth>
-                    Add to My Tasks
-                  </Button>
-                </div>
-              )}
             </Card>
 
             {/* Actions */}
             <div className="flex gap-4">
-              <Button variant="outline" onClick={handleSaveToJournal} className="flex-1">
-                📖 Save to Journal
+              <Button onClick={handleCreateTasks} variant="primary">
+                Create Tasks from Verdict
               </Button>
-              <Button onClick={() => setCurrentCase(null)} className="flex-1">
+              <Button onClick={handleSaveToJournal} variant="outline">
+                Save to Journal
+              </Button>
+              <Button onClick={handleNewDilemma} variant="ghost">
                 New Dilemma
               </Button>
             </div>
@@ -379,7 +411,7 @@ The strongest position combines preparation, principle, and decisive action. Bui
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-imperial-darkGray border-t border-imperial-gray">
+      <nav className="fixed bottom-0 left-0 right-0 bg-imperial-darkGray/90 backdrop-blur-sm border-t border-imperial-gray">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-around py-3">
             <button
@@ -406,6 +438,31 @@ The strongest position combines preparation, principle, and decisive action. Bui
           </div>
         </div>
       </nav>
+
+      {/* View Case Modal */}
+      {viewCase && (
+        <Modal
+          isOpen={!!viewCase}
+          onClose={() => setViewCase(null)}
+          title="Council Case"
+        >
+          <div className="space-y-4">
+            <div>
+              <h4 className="text-sm font-semibold text-imperial-gold mb-2">Your Dilemma:</h4>
+              <p className="text-sm text-imperial-cream opacity-90">{viewCase.dilemma_text}</p>
+            </div>
+            
+            <div>
+              <h4 className="text-sm font-semibold text-imperial-gold mb-2">Verdict:</h4>
+              <p className="text-sm text-imperial-cream opacity-90 whitespace-pre-line">{viewCase.verdict}</p>
+            </div>
+            
+            <div className="text-xs text-imperial-cream opacity-60">
+              {new Date(viewCase.created_at).toLocaleString()}
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }
