@@ -8,12 +8,12 @@ import { useAuth } from '@/app/contexts/AuthContext';
 import Button from '@/components/common/Button';
 import Card from '@/components/common/Card';
 import ProgressBar from '@/components/common/ProgressBar';
+import PageBackground from '@/components/common/PageBackground';
 import { getStoredTasks, getTrialProgress } from '@/lib/storage';
 import { MENTORS } from '@/utils/constants';
 import { CURRICULUM_DATA } from '@/lib/staticData';
 import { formatNumber, calculateXPProgress, getRankFromXP } from '@/utils/helpers';
 import type { Task, Trial } from '@/types';
-
 
 export default function HallPage() {
   const router = useRouter();
@@ -82,7 +82,8 @@ export default function HallPage() {
 
   if (authLoading || loading || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-imperial-black to-imperial-darkGray">
+      <div className="min-h-screen flex items-center justify-center">
+        <PageBackground />
         <div className="w-12 h-12 border-4 border-imperial-gold border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
@@ -93,8 +94,11 @@ export default function HallPage() {
   const todoPendingTasks = todayTasks.filter(t => t.status === 'todo');
   
   return (
-    <div className="min-h-screen pb-20 bg-gradient-to-b from-imperial-black to-imperial-darkGray">
-      <header className="bg-imperial-darkGray border-b border-imperial-gray sticky top-0 z-10">
+    <div className="min-h-screen pb-20">
+      <PageBackground />
+      
+      {/* Header Section */}
+      <header className="bg-imperial-darkGray/80 backdrop-blur-sm border-b border-imperial-gray sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
@@ -122,42 +126,58 @@ export default function HallPage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 py-6 space-y-6">
-        {/* Mentor Section */}
+        {/* Mentor Section with Background */}
         {mentor && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <Card variant="gold">
-              <div className="flex items-center gap-6">
-                {/* Mentor Image */}
-                <div className="relative w-24 h-24 flex-shrink-0">
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-imperial-gold to-imperial-darkGold opacity-20 blur-xl"></div>
-                  <div className="relative w-full h-full rounded-full border-4 border-imperial-gold shadow-gold overflow-hidden bg-imperial-darkGray">
-                    <Image
-                      src={mentor.imageUrl}
-                      alt={mentor.name}
-                      fill
-                      className="object-cover"
-                      priority
-                    />
+            <div className="relative overflow-hidden rounded-xl border-4 border-imperial-gold shadow-gold-lg min-h-[140px]">
+              {/* Background Image for Mentor Card */}
+              <div className="absolute inset-0 z-0">
+                <Image
+                  src="/images/mentors/mentorbg.jpg"
+                  alt="Mentor Background"
+                  fill
+                  className="object-cover opacity-30"
+                  priority
+                />
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-r from-imperial-black/90 via-imperial-darkGray/80 to-imperial-black/70" />
+              </div>
+
+              {/* Content */}
+              <div className="relative z-10 p-6">
+                <div className="flex items-center gap-6">
+                  {/* Mentor Image */}
+                  <div className="relative w-24 h-24 flex-shrink-0">
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-imperial-gold to-imperial-darkGold opacity-30 blur-xl"></div>
+                    <div className="relative w-full h-full rounded-full border-4 border-imperial-gold shadow-gold-lg overflow-hidden bg-imperial-darkGray">
+                      <Image
+                        src={mentor.imageUrl}
+                        alt={mentor.name}
+                        fill
+                        className="object-cover"
+                        priority
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* Mentor Info */}
+                  <div className="flex-1">
+                    <h2 className="text-3xl font-serif text-imperial-gold mb-1 drop-shadow-lg">
+                      {mentor.name}
+                    </h2>
+                    <p className="text-imperial-cream opacity-95 mb-2 font-medium">
+                      {mentor.title} • Your Guide
+                    </p>
+                    <p className="text-sm italic text-imperial-gold/90 leading-relaxed">
+                      &quot;{mentor.quote}&quot;
+                    </p>
                   </div>
                 </div>
-                
-                {/* Mentor Info */}
-                <div className="flex-1">
-                  <h2 className="text-2xl font-serif text-imperial-gold mb-1">
-                    {mentor.name}
-                  </h2>
-                  <p className="text-imperial-cream opacity-80 mb-2">
-                    {mentor.title} • Your Guide
-                  </p>
-                  <p className="text-sm italic text-imperial-cream opacity-70">
-                    &quot;{mentor.quote}&quot;
-                  </p>
-                </div>
               </div>
-            </Card>
+            </div>
           </motion.div>
         )}
 
@@ -166,11 +186,11 @@ export default function HallPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="grid md:grid-cols-3 gap-6"
+          className="grid md:grid-cols-3 gap-6 "
         >
           {/* Rank Progress */}
-          <Card>
-            <div className="text-center">
+          <Card className='opacity-70'>
+            <div className="text-center ">
               <div className="text-4xl mb-2">{getRankFromXP(user.influence_xp).icon}</div>
               <h3 className="text-xl font-serif text-imperial-gold mb-2">
                 {user.current_rank}
@@ -191,7 +211,7 @@ export default function HallPage() {
           </Card>
 
           {/* Trials Completed */}
-          <Card>
+          <Card className='opacity-70'>
             <div className="text-center">
               <div className="text-4xl mb-2">📚</div>
               <h3 className="text-3xl font-bold text-imperial-gold mb-2">
@@ -204,7 +224,7 @@ export default function HallPage() {
           </Card>
 
           {/* Tasks Completed */}
-          <Card>
+          <Card className='opacity-70'>
             <div className="text-center">
               <div className="text-4xl mb-2">✅</div>
               <h3 className="text-3xl font-bold text-imperial-gold mb-2">
@@ -226,12 +246,12 @@ export default function HallPage() {
         >
           {/* Continue Path Card */}
           <button onClick={() => router.push(currentTrial ? `/trial/${currentTrial.id}` : '/path')}>
-            <Card hover className="group">
+            <Card hover className="group opacity-70">
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 rounded-lg bg-gradient-to-r from-imperial-gold to-imperial-lightGold flex items-center justify-center text-3xl flex-shrink-0 group-hover:scale-110 transition-transform">
                   🗺️
                 </div>
-                <div className="flex-1 text-left">
+                <div className="flex-1 text-left ">
                   <h3 className="text-xl font-serif text-imperial-gold mb-1">
                     Continue Path
                   </h3>
@@ -251,7 +271,7 @@ export default function HallPage() {
 
           {/* Summon Council Card */}
           <button onClick={() => router.push('/council')}>
-            <Card hover className="group">
+            <Card hover className="group opacity-70">
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 rounded-lg bg-gradient-to-r from-imperial-gold to-imperial-lightGold flex items-center justify-center text-3xl flex-shrink-0 group-hover:scale-110 transition-transform">
                   👥
@@ -287,7 +307,7 @@ export default function HallPage() {
           </div>
 
           {todoPendingTasks.length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-3  opacity-70">
               {todoPendingTasks.slice(0, 5).map((task) => (
                 <Card key={task.id}>
                   <div className="flex items-start gap-4">
@@ -360,7 +380,7 @@ export default function HallPage() {
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-imperial-darkGray border-t border-imperial-gray">
+      <nav className="fixed bottom-0 left-0 right-0 bg-imperial-darkGray/90 backdrop-blur-sm border-t border-imperial-gray">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-around py-3">
             <button

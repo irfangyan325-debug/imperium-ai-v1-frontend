@@ -100,77 +100,86 @@ function SelectionHallContent() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.2 }}
+              className="h-full"
             >
               <button
                 onClick={() => setSelectedMentor(mentor.id)}
-                className="w-full"
+                className="w-full h-full"
               >
-                <Card
-                  variant={selectedMentor === mentor.id ? 'gold' : 'default'}
-                  hover
-                  className={`h-full transition-all duration-300 ${
-                    selectedMentor === mentor.id ? 'scale-105' : ''
-                  }`}
-                >
-                  <div className="text-center mb-6">
-                    <div className="relative w-32 h-32 mx-auto mb-4">
-                      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-imperial-gold to-imperial-darkGold opacity-20 blur-xl"></div>
-                      <div className="relative w-full h-full rounded-full border-4 border-imperial-gold shadow-gold overflow-hidden bg-imperial-darkGray">
-                        <Image
-                          src={mentor.imageUrl}
-                          alt={mentor.name}
-                          fill
-                          className="object-cover"
-                          priority={index < 3}
-                        />
+                <div className={`relative overflow-hidden rounded-xl h-full min-h-[550px] transition-all duration-300 ${
+                  selectedMentor === mentor.id 
+                    ? 'border-4 border-imperial-gold shadow-gold-lg scale-105' 
+                    : 'border-2 border-imperial-gray hover:border-imperial-gold'
+                }`}>
+                  {/* Background Image */}
+                  <div className="absolute inset-0">
+                    <Image
+                      src={mentor.imageUrl}
+                      alt={mentor.name}
+                      fill
+                      className="object-cover"
+                      priority={index < 3}
+                    />
+                    {/* Dark overlay for better text readability */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-imperial-black via-imperial-black/70 to-imperial-black/50" />
+                  </div>
+
+                  {/* Content */}
+                  <div className="relative z-10 p-6 flex flex-col h-full pt-40 text-start">
+                    {/* Mentor Name at Top */}
+                    <div className=" mb-4">
+                      <h2 className="text-3xl font-serif text-imperial-gold mb-1">
+                        {mentor.name}
+                      </h2>
+                      <p className="text-imperial-cream opacity-90 text-sm">
+                        {mentor.title}
+                      </p>
+                    </div>
+
+                    {/* Description */}
+                    <div className="flex-1 space-y-2">
+                      <p className="text-sm text-imperial-cream opacity-90">
+                        {mentor.description}
+                      </p>
+
+                      {/* Teaching Style */}
+                      <div>
+                        <h4 className="text-xs font-semibold text-imperial-gold mb-2">
+                          Teaching Style:
+                        </h4>
+                        <p className="text-xs text-imperial-cream opacity-80">
+                          {mentor.style}
+                        </p>
+                      </div>
+
+                      {/* Quote */}
+                      <div className="pt-4 border-t border-imperial-gold/30">
+                        <p className="text-xs italic text-imperial-gold">
+                          &quot;{mentor.quote}&quot;
+                        </p>
                       </div>
                     </div>
-                    <h2 className="text-2xl font-serif text-imperial-gold mb-1">
-                      {mentor.name}
-                    </h2>
-                    <p className="text-imperial-cream opacity-70 text-sm">
-                      {mentor.title}
-                    </p>
+
+                    {/* Selection Indicator */}
+                    {selectedMentor === mentor.id && (
+                      <div className="mt-4 text-center">
+                        <span className="inline-flex items-center gap-2 bg-gradient-to-r from-imperial-gold to-imperial-lightGold text-imperial-black px-4 py-2 rounded-lg font-semibold">
+                          <span>✓</span>
+                          Selected
+                        </span>
+                      </div>
+                    )}
+                    
+                    {/* Current Mentor Badge */}
+                    {user?.primary_mentor === mentor.id && (
+                      <div className="mt-2 text-center">
+                        <span className="text-xs text-imperial-gold font-semibold">
+                          Current Mentor
+                        </span>
+                      </div>
+                    )}
                   </div>
-
-                  <div className="space-y-4 text-left">
-                    <p className="text-sm text-imperial-cream opacity-80">
-                      {mentor.description}
-                    </p>
-
-                    <div>
-                      <h4 className="text-xs font-semibold text-imperial-gold mb-2">
-                        Teaching Style:
-                      </h4>
-                      <p className="text-xs text-imperial-cream opacity-70">
-                        {mentor.style}
-                      </p>
-                    </div>
-
-                    <div className="pt-4 border-t border-imperial-gray">
-                      <p className="text-xs italic text-imperial-gold">
-                        &quot;{mentor.quote}&quot;
-                      </p>
-                    </div>
-                  </div>
-
-                  {selectedMentor === mentor.id && (
-                    <div className="mt-4 text-center">
-                      <span className="inline-flex items-center gap-2 bg-gradient-to-r from-imperial-gold to-imperial-lightGold text-imperial-black px-4 py-2 rounded-lg font-semibold">
-                        <span>✓</span>
-                        Selected
-                      </span>
-                    </div>
-                  )}
-                  
-                  {user?.primary_mentor === mentor.id && (
-                    <div className="mt-2 text-center">
-                      <span className="text-xs text-imperial-gold">
-                        Current Mentor
-                      </span>
-                    </div>
-                  )}
-                </Card>
+                </div>
               </button>
             </motion.div>
           ))}

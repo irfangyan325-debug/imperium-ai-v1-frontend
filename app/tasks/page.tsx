@@ -84,7 +84,7 @@ export default function TasksPage() {
       toast.error('Failed to complete task');
     }
   };
-
+586602376
   const handleSkipTask = async (taskId: number) => {
     try {
       updateTask(taskId, { status: 'skipped' });
