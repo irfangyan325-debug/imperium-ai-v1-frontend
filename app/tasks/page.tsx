@@ -7,6 +7,7 @@ import { useAuth } from '@/app/contexts/AuthContext';
 import Button from '@/components/common/Button';
 import Card from '@/components/common/Card';
 import Modal from '@/components/common/Modal';
+import PageBackground from '@/components/common/PageBackground';
 import { getStoredTasks, addTask, updateTask, deleteTask, updateUserStreak } from '@/lib/storage';
 import { getTaskStatusColor, formatDate } from '@/utils/helpers';
 import toast from 'react-hot-toast';
@@ -61,7 +62,7 @@ export default function TasksPage() {
       setShowCreateModal(false);
       setNewTask({ title: '', description: '' });
       loadTasks();
-    } catch (_error) {
+    } catch {
       toast.error('Failed to create task');
     } finally {
       setCreating(false);
@@ -80,17 +81,17 @@ export default function TasksPage() {
       
       toast.success('Task completed! 🎉');
       loadTasks();
-    } catch (_error) {
+    } catch {
       toast.error('Failed to complete task');
     }
   };
-586602376
+
   const handleSkipTask = async (taskId: number) => {
     try {
       updateTask(taskId, { status: 'skipped' });
       toast.success('Task skipped');
       loadTasks();
-    } catch (_error) {
+    } catch {
       toast.error('Failed to skip task');
     }
   };
@@ -102,14 +103,15 @@ export default function TasksPage() {
       deleteTask(taskId);
       toast.success('Task deleted');
       loadTasks();
-    } catch (_error) {
+    } catch {
       toast.error('Failed to delete task');
     }
   };
 
   if (authLoading || loading || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-imperial-black to-imperial-darkGray">
+      <div className="min-h-screen flex items-center justify-center">
+        <PageBackground />
         <div className="w-12 h-12 border-4 border-imperial-gold border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
@@ -124,9 +126,11 @@ export default function TasksPage() {
   const skippedCount = tasks.filter(t => t.status === 'skipped').length;
 
   return (
-    <div className="min-h-screen pb-20 bg-gradient-to-b from-imperial-black to-imperial-darkGray">
+    <div className="min-h-screen pb-20">
+      <PageBackground />
+
       {/* Header Section */}
-      <header className="bg-imperial-darkGray border-b border-imperial-gray sticky top-0 z-10">
+      <header className="bg-imperial-darkGray/80 backdrop-blur-sm border-b border-imperial-gray sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
@@ -318,7 +322,7 @@ export default function TasksPage() {
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-imperial-darkGray border-t border-imperial-gray">
+      <nav className="fixed bottom-0 left-0 right-0 bg-imperial-darkGray/90 backdrop-blur-sm border-t border-imperial-gray">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-around py-3">
             <button
