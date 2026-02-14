@@ -68,7 +68,7 @@ function SelectionHallContent() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <PageBackground />
-        <div className="w-12 h-12 border-4 border-imperial-gold border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-12 h-12 border-4 border-imperial-darkGold border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -108,8 +108,8 @@ function SelectionHallContent() {
               >
                 <div className={`relative overflow-hidden rounded-xl h-full min-h-[550px] transition-all duration-300 ${
                   selectedMentor === mentor.id 
-                    ? 'border-4 border-imperial-gold shadow-gold-lg scale-105' 
-                    : 'border-2 border-imperial-gray hover:border-imperial-gold'
+                    ? 'border-4 border-imperial-darkGold shadow-gold-lg scale-105' 
+                    : 'border-2 border-imperial-gray hover:border-imperial-darkGold'
                 }`}>
                   {/* Background Image */}
                   <div className="absolute inset-0">
@@ -153,8 +153,8 @@ function SelectionHallContent() {
                       </div>
 
                       {/* Quote */}
-                      <div className="pt-4 border-t border-imperial-gold/30">
-                        <p className="text-xs italic text-imperial-gold">
+                      <div className="pt-4 border-t border-imperial-darkGold/30">
+                        <p className="text-xs italic text-imperial-darkGold">
                           &quot;{mentor.quote}&quot;
                         </p>
                       </div>
@@ -220,7 +220,7 @@ export default function SelectionHallPage() {
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center">
         <PageBackground />
-        <div className="w-12 h-12 border-4 border-imperial-gold border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-12 h-12 border-4 border-imperial-darkGold border-t-transparent rounded-full animate-spin"></div>
       </div>
     }>
       <SelectionHallContent />
