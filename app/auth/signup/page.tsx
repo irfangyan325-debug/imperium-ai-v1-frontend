@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '@/app/contexts/AuthContext';
 import Button from '@/components/common/Button';
 import Card from '@/components/common/Card';
+import PageBackground from '@/components/common/PageBackground';
 import toast from 'react-hot-toast';
 
 export default function SignupPage() {
@@ -51,19 +52,16 @@ export default function SignupPage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-imperial-black to-imperial-darkGray">
+      <div className="min-h-screen flex items-center justify-center">
+        <PageBackground />
         <div className="w-12 h-12 border-4 border-imperial-gold border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 relative overflow-hidden bg-gradient-to-b from-imperial-black to-imperial-darkGray">
-      {/* Background Effects */}
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-imperial-gold opacity-10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-imperial-gold opacity-10 rounded-full blur-3xl"></div>
-      </div>
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 relative overflow-hidden">
+      <PageBackground />
 
       <div className="relative z-10 w-full max-w-md">
         {/* Logo/Title */}

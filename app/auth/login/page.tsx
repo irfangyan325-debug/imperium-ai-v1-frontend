@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '@/app/contexts/AuthContext';
 import Button from '@/components/common/Button';
 import Card from '@/components/common/Card';
+import PageBackground from '@/components/common/PageBackground';
 import toast from 'react-hot-toast';
 
 export default function LoginPage() {
@@ -43,19 +44,15 @@ export default function LoginPage() {
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="spinner"></div>
+        <PageBackground />
+        <div className="w-12 h-12 border-4 border-imperial-gold border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 bg-gradient-dark">
-      {/* Background Effects */}
-      <div className="absolute inset-0 bg-gradient-radial from-imperial-darkGray to-imperial-black opacity-50"></div>
-      <div className="absolute inset-0">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-imperial-gold opacity-5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-imperial-gold opacity-5 rounded-full blur-3xl"></div>
-      </div>
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 relative overflow-hidden">
+      <PageBackground />
 
       <div className="relative z-10 w-full max-w-md">
         {/* Logo/Title */}
@@ -64,10 +61,10 @@ export default function LoginPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-8"
         >
-          <h1 className="text-5xl font-serif text-gradient-gold mb-2">
+          <h1 className="text-5xl md:text-6xl font-serif mb-2 bg-gradient-to-r from-imperial-gold to-imperial-lightGold bg-clip-text text-transparent">
             IMPERIUM AI
           </h1>
-          <p className="text-imperial-cream opacity-80">
+          <p className="text-imperial-cream opacity-80 text-lg">
             Return to Power
           </p>
         </motion.div>
@@ -92,7 +89,7 @@ export default function LoginPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="input"
+                  className="w-full px-4 py-3 bg-imperial-darkGray border-2 border-imperial-gray rounded-lg text-imperial-cream placeholder-imperial-cream placeholder:opacity-40 focus:border-imperial-gold focus:outline-none transition-colors"
                   placeholder="your@email.com"
                   autoComplete="email"
                 />
@@ -106,7 +103,7 @@ export default function LoginPage() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="input"
+                  className="w-full px-4 py-3 bg-imperial-darkGray border-2 border-imperial-gray rounded-lg text-imperial-cream placeholder-imperial-cream placeholder:opacity-40 focus:border-imperial-gold focus:outline-none transition-colors"
                   placeholder="••••••••"
                   autoComplete="current-password"
                 />
@@ -134,6 +131,14 @@ export default function LoginPage() {
               </p>
             </div>
 
+            {/* Demo Credentials */}
+            <div className="mt-6 p-4 bg-imperial-darkGray rounded-lg border border-imperial-gray">
+              <p className="text-xs text-imperial-gold font-semibold mb-2">Demo Credentials:</p>
+              <p className="text-xs text-imperial-cream opacity-70">
+                Email: test@example.com<br />
+                Password: password123
+              </p>
+            </div>
           </Card>
         </motion.div>
 
@@ -142,10 +147,11 @@ export default function LoginPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
-          className="mt-8 text-center text-sm text-imperial-cream opacity-60 italic"
+          className="mt-8 text-center text-sm text-imperial-cream opacity-60 italic px-4"
         >
-          "The first method for estimating the intelligence of a ruler is to look at the men he has around him."
-          <br />— Niccolò Machiavelli
+          &quot;The first method for estimating the intelligence of a ruler is to look at the men he has around him.&quot;
+          <br />
+          <span className="text-imperial-gold">— Niccolò Machiavelli</span>
         </motion.p>
       </div>
     </div>
