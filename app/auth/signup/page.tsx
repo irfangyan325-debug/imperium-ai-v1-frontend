@@ -54,7 +54,7 @@ export default function SignupPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <PageBackground />
-        <div className="w-12 h-12 border-4 border-imperial-gold border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-12 h-12 border-4 border-imperial-darkGold border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -70,7 +70,7 @@ export default function SignupPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-8"
         >
-          <h1 className="text-5xl md:text-6xl font-serif mb-2 bg-gradient-to-r from-imperial-gold to-imperial-lightGold bg-clip-text text-transparent">
+          <h1 className="text-5xl md:text-6xl font-serif mb-2 bg-gradient-to-r from-imperial-darkGold to-imperial-lightGold bg-clip-text text-transparent">
             IMPERIUM AI
           </h1>
           <p className="text-imperial-cream opacity-70 text-lg">
@@ -85,7 +85,7 @@ export default function SignupPage() {
           transition={{ delay: 0.2 }}
         >
           <Card variant="gold">
-            <h2 className="text-2xl font-serif text-imperial-gold mb-6 text-center">
+            <h2 className="text-2xl font-serif text-imperial-darkGold mb-6 text-center">
               Create Account
             </h2>
 
@@ -98,7 +98,7 @@ export default function SignupPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 bg-imperial-darkGray border-2 border-imperial-gray rounded-lg text-imperial-cream placeholder-imperial-cream placeholder:opacity-40 focus:border-imperial-gold focus:outline-none transition-colors"
+                  className="w-full px-4 py-3 bg-imperial-darkGray border-2 border-imperial-gray rounded-lg text-imperial-cream placeholder-imperial-cream placeholder:opacity-40 focus:border-imperial-darkGold focus:outline-none transition-colors"
                   placeholder="your@email.com"
                   autoComplete="email"
                 />
@@ -112,7 +112,7 @@ export default function SignupPage() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 bg-imperial-darkGray border-2 border-imperial-gray rounded-lg text-imperial-cream placeholder-imperial-cream placeholder:opacity-40 focus:border-imperial-gold focus:outline-none transition-colors"
+                  className="w-full px-4 py-3 bg-imperial-darkGray border-2 border-imperial-gray rounded-lg text-imperial-cream placeholder-imperial-cream placeholder:opacity-40 focus:border-imperial-darkGold focus:outline-none transition-colors"
                   placeholder="••••••••"
                   autoComplete="new-password"
                 />
@@ -129,7 +129,7 @@ export default function SignupPage() {
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full px-4 py-3 bg-imperial-darkGray border-2 border-imperial-gray rounded-lg text-imperial-cream placeholder-imperial-cream placeholder:opacity-40 focus:border-imperial-gold focus:outline-none transition-colors"
+                  className="w-full px-4 py-3 bg-imperial-darkGray border-2 border-imperial-gray rounded-lg text-imperial-cream placeholder-imperial-cream placeholder:opacity-40 focus:border-imperial-darGold focus:outline-none transition-colors"
                   placeholder="••••••••"
                   autoComplete="new-password"
                 />
@@ -150,7 +150,7 @@ export default function SignupPage() {
                 Already have an account?{' '}
                 <button
                   onClick={() => router.push('/auth/login')}
-                  className="text-imperial-gold hover:text-imperial-lightGold font-semibold transition-colors"
+                  className="text-imperial-darkGold hover:text-imperial-lightGold font-semibold transition-colors"
                 >
                   Sign In
                 </button>
@@ -168,7 +168,7 @@ export default function SignupPage() {
         >
           &quot;The greatest danger for most of us is not that our aim is too high and we miss it, but that it is too low and we reach it.&quot;
           <br />
-          <span className="text-imperial-gold">— Michelangelo</span>
+          <span className="text-imperial-darkGold">— Michelangelo</span>
         </motion.p>
       </div>
     </div>

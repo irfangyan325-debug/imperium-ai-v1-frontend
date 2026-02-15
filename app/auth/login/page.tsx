@@ -61,7 +61,7 @@ export default function LoginPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-8"
         >
-          <h1 className="text-5xl md:text-6xl font-serif mb-2 bg-gradient-to-r from-imperial-gold to-imperial-lightGold bg-clip-text text-transparent">
+          <h1 className="text-5xl md:text-6xl text-imperial-darkGold font-serif mb-2 bg-gradient-to-r from-imperial-darkGold to-imperial-lightGold bg-clip-text text-transparent">
             IMPERIUM AI
           </h1>
           <p className="text-imperial-cream opacity-80 text-lg">
@@ -76,7 +76,7 @@ export default function LoginPage() {
           transition={{ delay: 0.2 }}
         >
           <Card variant="gold">
-            <h2 className="text-2xl font-serif text-imperial-gold mb-6 text-center">
+            <h2 className="text-2xl font-serif text-imperial-darkGold mb-6 text-center">
               Welcome Back
             </h2>
 
