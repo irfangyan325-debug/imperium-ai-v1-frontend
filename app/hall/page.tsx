@@ -84,7 +84,7 @@ export default function HallPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <PageBackground />
-        <div className="w-12 h-12 border-4 border-imperial-gold border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-12 h-12 border-4 border-imperial-darkGold border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -102,22 +102,22 @@ export default function HallPage() {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-serif bg-gradient-to-r from-imperial-gold to-imperial-lightGold bg-clip-text text-transparent">Command Hall</h1>
+              <h1 className="text-3xl font-serif bg-gradient-to-r from-imperial-darkGold to-imperial-lightGold bg-clip-text text-transparent">Command Hall</h1>
               <p className="text-imperial-cream opacity-70 text-sm">
                 Welcome back, {user.email.split('@')[0]}
               </p>
             </div>
             <div className="flex items-center gap-4 text-sm">
               <div className="text-center">
-                <div className="text-imperial-gold font-bold">{user.current_rank}</div>
+                <div className="text-imperial-darkGold font-bold">{user.current_rank}</div>
                 <div className="text-imperial-cream opacity-60">Rank</div>
               </div>
               <div className="text-center">
-                <div className="text-imperial-gold font-bold">{formatNumber(user.influence_xp)}</div>
+                <div className="text-imperial-darkGold font-bold">{formatNumber(user.influence_xp)}</div>
                 <div className="text-imperial-cream opacity-60">XP</div>
               </div>
               <div className="text-center">
-                <div className="text-imperial-gold font-bold">{user.streak_days}</div>
+                <div className="text-imperial-darkGold font-bold">{user.streak_days}</div>
                 <div className="text-imperial-cream opacity-60">Streak</div>
               </div>
             </div>
@@ -132,7 +132,7 @@ export default function HallPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <div className="relative overflow-hidden rounded-xl border-4 border-imperial-gold shadow-gold-lg min-h-[140px]">
+            <div className="relative overflow-hidden rounded-xl border-2 border-imperial-darkGold shadow-gold-lg min-h-[140px]">
               {/* Background Image for Mentor Card */}
               <div className="absolute inset-0 z-0">
                 <Image
@@ -151,8 +151,8 @@ export default function HallPage() {
                 <div className="flex items-center gap-6">
                   {/* Mentor Image */}
                   <div className="relative w-24 h-24 flex-shrink-0">
-                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-imperial-gold to-imperial-darkGold opacity-30 blur-xl"></div>
-                    <div className="relative w-full h-full rounded-full border-4 border-imperial-gold shadow-gold-lg overflow-hidden bg-imperial-darkGray">
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-imperial-darkGold to-imperial-darkGold opacity-30 blur-xl"></div>
+                    <div className="relative w-full h-full rounded-full border-4 border-imperial-darkGold shadow-gold-lg overflow-hidden bg-imperial-darkGray">
                       <Image
                         src={mentor.imageUrl}
                         alt={mentor.name}
@@ -165,13 +165,13 @@ export default function HallPage() {
                   
                   {/* Mentor Info */}
                   <div className="flex-1">
-                    <h2 className="text-3xl font-serif text-imperial-gold mb-1 drop-shadow-lg">
+                    <h2 className="text-3xl font-serif text-imperial-darkGold mb-1 drop-shadow-lg">
                       {mentor.name}
                     </h2>
                     <p className="text-imperial-cream opacity-95 mb-2 font-medium">
                       {mentor.title} • Your Guide
                     </p>
-                    <p className="text-sm italic text-imperial-gold/90 leading-relaxed">
+                    <p className="text-sm italic text-imperial-darkGold/90 leading-relaxed">
                       &quot;{mentor.quote}&quot;
                     </p>
                   </div>
@@ -192,7 +192,7 @@ export default function HallPage() {
           <Card className='opacity-70'>
             <div className="text-center ">
               <div className="text-4xl mb-2">{getRankFromXP(user.influence_xp).icon}</div>
-              <h3 className="text-xl font-serif text-imperial-gold mb-2">
+              <h3 className="text-xl font-serif text-imperial-darkGold mb-2">
                 {user.current_rank}
               </h3>
               <p className="text-sm text-imperial-cream opacity-80 mb-4">
@@ -214,7 +214,7 @@ export default function HallPage() {
           <Card className='opacity-70'>
             <div className="text-center">
               <div className="text-4xl mb-2">📚</div>
-              <h3 className="text-3xl font-bold text-imperial-gold mb-2">
+              <h3 className="text-3xl font-bold text-imperial-darkGold mb-2">
                 {trialsCompleted}
               </h3>
               <p className="text-sm text-imperial-cream opacity-80">
@@ -227,7 +227,7 @@ export default function HallPage() {
           <Card className='opacity-70'>
             <div className="text-center">
               <div className="text-4xl mb-2">✅</div>
-              <h3 className="text-3xl font-bold text-imperial-gold mb-2">
+              <h3 className="text-3xl font-bold text-imperial-darkGold mb-2">
                 {tasksCompleted}
               </h3>
               <p className="text-sm text-imperial-cream opacity-80">
@@ -248,11 +248,11 @@ export default function HallPage() {
           <button onClick={() => router.push(currentTrial ? `/trial/${currentTrial.id}` : '/path')}>
             <Card hover className="group opacity-70">
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-lg bg-gradient-to-r from-imperial-gold to-imperial-lightGold flex items-center justify-center text-3xl flex-shrink-0 group-hover:scale-110 transition-transform">
+                <div className="w-16 h-16 rounded-lg bg-gradient-to-r from-imperial-darkGold to-imperial-lightGold flex items-center justify-center text-3xl flex-shrink-0 group-hover:scale-110 transition-transform">
                   🗺️
                 </div>
                 <div className="flex-1 text-left ">
-                  <h3 className="text-xl font-serif text-imperial-gold mb-1">
+                  <h3 className="text-xl font-serif text-imperial-darkGold mb-1">
                     Continue Path
                   </h3>
                   {currentTrial ? (
@@ -273,11 +273,11 @@ export default function HallPage() {
           <button onClick={() => router.push('/council')}>
             <Card hover className="group opacity-70">
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-lg bg-gradient-to-r from-imperial-gold to-imperial-lightGold flex items-center justify-center text-3xl flex-shrink-0 group-hover:scale-110 transition-transform">
+                <div className="w-16 h-16 rounded-lg bg-gradient-to-r from-imperial-darkGold to-imperial-lightGold flex items-center justify-center text-3xl flex-shrink-0 group-hover:scale-110 transition-transform">
                   👥
                 </div>
                 <div className="flex-1 text-left">
-                  <h3 className="text-xl font-serif text-imperial-gold mb-1">
+                  <h3 className="text-xl font-serif text-imperial-darkGold mb-1">
                     Summon Council
                   </h3>
                   <p className="text-sm text-imperial-cream opacity-80">
@@ -296,7 +296,7 @@ export default function HallPage() {
           transition={{ delay: 0.3 }}
         >
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-serif text-imperial-gold">Today&apos;s Tasks</h2>
+            <h2 className="text-2xl font-serif text-imperial-darkGold">Today&apos;s Tasks</h2>
             <Button
               variant="ghost"
               size="sm"
@@ -313,7 +313,7 @@ export default function HallPage() {
                   <div className="flex items-start gap-4">
                     <button
                       onClick={() => handleCompleteTask(task.id)}
-                      className="w-6 h-6 rounded border-2 border-imperial-gold flex items-center justify-center hover:bg-imperial-gold transition-colors flex-shrink-0 mt-1"
+                      className="w-6 h-6 rounded border-2 border-imperial-darkGold flex items-center justify-center hover:bg-imperial-darkGold transition-colors flex-shrink-0 mt-1"
                     >
                       {task.status === 'done' && <span className="text-imperial-black">✓</span>}
                     </button>
@@ -323,7 +323,7 @@ export default function HallPage() {
                         <p className="text-sm text-imperial-cream opacity-70">{task.description}</p>
                       )}
                       {task.source_name && (
-                        <p className="text-xs text-imperial-gold mt-1">From: {task.source_name}</p>
+                        <p className="text-xs text-imperial-darkGold mt-1">From: {task.source_name}</p>
                       )}
                     </div>
                   </div>
@@ -385,7 +385,7 @@ export default function HallPage() {
           <div className="flex items-center justify-around py-3">
             <button
               onClick={() => router.push('/hall')}
-              className="flex flex-col items-center gap-1 text-imperial-gold"
+              className="flex flex-col items-center gap-1 text-imperial-darkGoold"
             >
               <span className="text-2xl">🏛️</span>
               <span className="text-xs">Hall</span>
