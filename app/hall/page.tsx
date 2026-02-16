@@ -109,10 +109,10 @@ export default function HallPage() {
       {/* Background Image */}
       <div className="fixed inset-0 -z-10">
         <Image
-          src="/images/mentors/mentorbg.jpg"
+          src="/images/mentors/mtbg.jpg"
           alt="Background"
           fill
-          className="object-cover opacity-50"
+          className="object-cover"
           priority
           quality={85}
         />
@@ -154,11 +154,11 @@ export default function HallPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <div className="relative overflow-hidden rounded-xl border-2 border-imperial-darkGold shadow-gold-lg min-h-[140px]">
+            <div className="relative overflow-hidden rounded-xl border-2 border-imperial-darkGold shadow-gold-lg min-h-[40px]">
               {/* Background Image for Mentor Card */}
               <div className="absolute inset-0 z-0">
                 <Image
-                  src="/images/mentors/cardtop.png"
+                  src="/images/mentors/mentbg.png"
                   alt="Mentor Background"
                   fill
                   className="object-cover"
@@ -327,8 +327,8 @@ export default function HallPage() {
               </div>
 
               {/* Content */}
-              <div className="relative z-10 p-6">
-                <div className="flex items-center gap-4">
+              <div className="relative z-10 p-6 flex justify-center ">
+                <div className=" flex items-center gap-4 py-4">
                   <div className="w-16 h-16 rounded-lg bg-gradient-to-r from-imperial-gold to-imperial-lightGold flex items-center justify-center text-3xl flex-shrink-0 group-hover:scale-110 transition-transform">
                     🗺️
                   </div>
@@ -367,8 +367,8 @@ export default function HallPage() {
               </div>
 
               {/* Content */}
-              <div className="relative z-10 p-6">
-                <div className="flex items-center gap-4">
+              <div className="relative z-10 p-6 flex justify-center ">
+                <div className=" flex items-center gap-4 py-4">
                   <div className="w-16 h-16 rounded-lg bg-gradient-to-r from-imperial-gold to-imperial-lightGold flex items-center justify-center text-3xl flex-shrink-0 group-hover:scale-110 transition-transform">
                     👥
                   </div>
