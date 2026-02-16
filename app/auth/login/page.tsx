@@ -131,14 +131,6 @@ export default function LoginPage() {
               </p>
             </div>
 
-            {/* Demo Credentials */}
-            <div className="mt-6 p-4 bg-imperial-darkGray rounded-lg border border-imperial-gray">
-              <p className="text-xs text-imperial-gold font-semibold mb-2">Demo Credentials:</p>
-              <p className="text-xs text-imperial-cream opacity-70">
-                Email: test@example.com<br />
-                Password: password123
-              </p>
-            </div>
           </Card>
         </motion.div>
 
